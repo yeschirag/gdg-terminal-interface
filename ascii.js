@@ -476,13 +476,16 @@ function playAscii(elementId, interval = 59, colour = "#00ff00") {
     }
 
     let i = 0;
+    
+    // Proper animation loop using setTimeout recursion
     function loop() {
         preElement.innerHTML = `<span style="color:${colour}">${asciiFrames[i]}</span>`;
         i = (i + 1) % asciiFrames.length;
         setTimeout(loop, interval);
     }
+    
+    // Start the animation
     loop();
 }
 
-// Export both the function AND the frames array
 export { asciiFrames, playAscii };

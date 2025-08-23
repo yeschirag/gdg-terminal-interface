@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const asciiArtLogo = document.getElementById('ascii-art');
     const asciiAnimationContainer = document.getElementById('ascii-animation-container');
 
+    // Matrix effect state
+    let matrixContainer = null;
+    let matrixStyle = null;
+    let isMatrixActive = false;
+
     // Focus on the input field when clicking anywhere in the terminal
     terminal.addEventListener('click', () => {
         userInput.focus();
@@ -70,29 +75,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let asciiArtPlayed = false;
 
-    // --- Matrix Effect Function ---
-    function runMatrixEffect() {
+    // --- Matrix Effect Functions ---
+    function startMatrixEffect() {
+        if (isMatrixActive) return;
+        
         const chars = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン01234567890";
-        const matrixContainer = document.createElement('div');
+        
+        // Create matrix container BEHIND the terminal
+        matrixContainer = document.createElement('div');
+        matrixContainer.id = 'matrix-background';
         matrixContainer.style.cssText = `
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.9); z-index: 1000; overflow: hidden;
-            font-family: 'Share Tech Mono', monospace; color: #00ff41;
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.1);
+            z-index: 1;
+            overflow: hidden;
+            font-family: 'Share Tech Mono', monospace; 
+            color: #00ff41;
             pointer-events: none;
         `;
-        document.body.appendChild(matrixContainer);
+        
+        // Insert BEFORE the CRT container so it appears behind
+        document.body.insertBefore(matrixContainer, document.body.firstChild);
 
-        for (let i = 0; i < 50; i++) {
+        // Create falling matrix columns
+        for (let i = 0; i < 40; i++) {
             const column = document.createElement('div');
+            column.className = 'matrix-column';
             column.style.cssText = `
-                position: absolute; top: -100px; 
+                position: absolute; 
+                top: -200px; 
                 left: ${Math.random() * 100}%; 
-                font-size: ${Math.random() * 16 + 12}px;
-                animation: matrix-fall ${Math.random() * 3 + 2}s linear infinite;
+                font-size: ${Math.random() * 14 + 10}px;
+                animation: matrix-fall ${Math.random() * 4 + 3}s linear infinite;
+                animation-delay: ${Math.random() * 2}s;
+                opacity: ${Math.random() * 0.7 + 0.3};
             `;
             
             let text = '';
-            for (let j = 0; j < 20; j++) {
+            for (let j = 0; j < 30; j++) {
                 text += chars[Math.floor(Math.random() * chars.length)] + '<br>';
             }
             column.innerHTML = text;
@@ -100,18 +124,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Add CSS animation
-        const style = document.createElement('style');
-        style.textContent = `
+        matrixStyle = document.createElement('style');
+        matrixStyle.id = 'matrix-styles';
+        matrixStyle.textContent = `
             @keyframes matrix-fall {
-                to { transform: translateY(100vh); }
+                0% { transform: translateY(-200px); opacity: 0; }
+                10% { opacity: 1; }
+                90% { opacity: 1; }
+                100% { transform: translateY(calc(100vh + 200px)); opacity: 0; }
+            }
+            .matrix-column:nth-child(even) {
+                color: #00ff41;
+            }
+            .matrix-column:nth-child(odd) {
+                color: #008f11;
             }
         `;
-        document.head.appendChild(style);
+        document.head.appendChild(matrixStyle);
+        
+        isMatrixActive = true;
+    }
 
-        setTimeout(() => {
+    function stopMatrixEffect() {
+        if (!isMatrixActive) return;
+        
+        if (matrixContainer) {
             matrixContainer.remove();
-            style.remove();
-        }, 5000);
+            matrixContainer = null;
+        }
+        
+        if (matrixStyle) {
+            matrixStyle.remove();
+            matrixStyle = null;
+        }
+        
+        isMatrixActive = false;
     }
 
     // --- Command Processing ---
@@ -127,13 +174,14 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'help':
                 responseContainer.innerHTML = `
 Available commands:
-  help       - Displays this list of commands.
-  clear      - Clears the terminal screen.
-  date       - Shows the current system date.
-  whoami     - Displays information about the current user.
-  art        - Display ASCII animation.
-  matrix     - Engage matrix display effect.
-  exit       - Terminate the session.`;
+  help         - Displays this list of commands.
+  clear        - Clears the terminal screen.
+  date         - Shows the current system date.
+  whoami       - Displays information about the current user.
+  matrix       - Toggle matrix background effect.
+  matrix on    - Enable matrix background effect.
+  matrix off   - Disable matrix background effect.
+  exit         - Terminate the session.`;
                 break;
 
             case 'clear':
@@ -154,51 +202,38 @@ ACCESS_LEVEL: GUEST
 CLEARANCE: CLASSIFIED`;
                 break;
 
-            case 'art':
-                // Create animation container within the response
-                const animationDiv = document.createElement('div');
-                animationDiv.style.cssText = `
-                    text-align: center; 
-                    margin: 1rem 0; 
-                    background: rgba(0,0,0,0.3); 
-                    border: 1px solid #33ff77;
-                    padding: 10px;
-                `;
-                
-                const asciiPre = document.createElement('pre');
-                asciiPre.style.cssText = `
-                    font-family: 'Share Tech Mono', monospace;
-                    font-size: 0.4rem;
-                    line-height: 0.5rem;
-                    margin: 0;
-                    padding: 0;
-                    white-space: pre;
-                `;
-                
-                animationDiv.appendChild(asciiPre);
-                responseContainer.appendChild(animationDiv);
-                
-                // Start the animation
-                let i = 0;
-                function playInlineAscii() {
-                    asciiPre.innerHTML = `<span style="color: #00ff41;">${asciiFrames[i]}</span>`;
-                    i = (i + 1) % asciiFrames.length;
-                    setTimeout(playInlineAscii, 100);
-                }
-                playInlineAscii();
-                
-                responseContainer.innerHTML += `<br>[ASCII animation playing in terminal...]`;
-                asciiArtPlayed = true;
-                break;
-
             case 'matrix':
-                responseContainer.innerHTML = `Engaging matrix display effect... stand by.`;
-                setTimeout(runMatrixEffect, 1000);
+                if (argument === 'on') {
+                    if (isMatrixActive) {
+                        responseContainer.innerHTML = `Matrix background is already active.`;
+                    } else {
+                        startMatrixEffect();
+                        responseContainer.innerHTML = `Matrix background effect enabled. Use 'matrix off' to disable.`;
+                    }
+                } else if (argument === 'off') {
+                    if (!isMatrixActive) {
+                        responseContainer.innerHTML = `Matrix background is not active.`;
+                    } else {
+                        stopMatrixEffect();
+                        responseContainer.innerHTML = `Matrix background effect disabled.`;
+                    }
+                } else {
+                    // Toggle matrix effect
+                    if (isMatrixActive) {
+                        stopMatrixEffect();
+                        responseContainer.innerHTML = `Matrix background effect disabled.`;
+                    } else {
+                        startMatrixEffect();
+                        responseContainer.innerHTML = `Matrix background effect enabled. Use 'matrix off' to disable.`;
+                    }
+                }
                 break;
 
             case 'exit':
                 responseContainer.innerHTML = `Terminating session... Goodbye, Operator.`;
                 setTimeout(() => {
+                    // Stop matrix effect before closing
+                    stopMatrixEffect();
                     document.body.innerHTML = `
                         <div style="
                             display: flex; justify-content: center; align-items: center; 

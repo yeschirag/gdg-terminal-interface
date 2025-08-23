@@ -133,20 +133,6 @@ body::before {
     display: none;
 }
 
-/* ASCII animation container */
-#ascii-animation-container {
-    text-align: center;
-    margin: 1rem 0;
-}
-
-#ascii-animation-container pre {
-    font-family: 'Share Tech Mono', monospace;
-    white-space: pre;
-    font-size: 0.4rem;
-    line-height: 0.5rem;
-    margin: 0;
-    padding: 0;
-}
 
 /* Glitch effect for title */
 .glitch {
@@ -316,4 +302,23 @@ body::before {
         width: 1.5rem;
         height: 1.5rem;
     }
+}
+
+/* Ensure terminal components are above matrix background */
+.crt-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    z-index: 10; /* Ensure it's above matrix background */
+}
+
+/* Matrix background stays behind everything */
+#matrix-background {
+    z-index: 1 !important;
 }
