@@ -3,65 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRNL.SYS // CORTEX RELAY NODE LINK</title>
-    <!-- Link to your external CSS file -->
-    <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts for the retro monospace look -->
+    <title>CRNL.SYS Retro Terminal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- 
-        SECRET KEY - STEP 1:
-        A good hacker always checks the source. 
-        Are you a detective? Try the 'scan' command. 
-    -->
     <div class="crt-container">
         <div class="corner top-left"></div>
         <div class="corner top-right"></div>
         <div class="corner bottom-left"></div>
         <div class="corner bottom-right"></div>
-
-        <header id="terminal-header">
-            <span>CRNL.SYS // CORTEX RELAY NODE LINK</span>
-            <span id="system-status">STATUS: SECURE</span>
-        </header>
-
+        
+        <div id="terminal-header">
+            <span>CRNL.SYS v4.2.0 [LOADED]</span>
+            <span id="system-status">STATUS: ONLINE</span>
+        </div>
+        
         <div id="terminal">
-            <div class="command-output">
-                <pre id="ascii-art">
-   _____ ____    _   _ _____ ____   __  __ _____ _   _ _____ 
-  / ____/ __ \  | \ | |_   _/ __ \ |  \/  |  __ \ \ | |_   _|
- | |   | |  | | |  \| | | || |  | || \  / | |__) |  \| | | |  
- | |   | |  | | | . ` | | || |  | || |\/| |  ___/| . ` | | |  
- | |___| |__| | | |\  |_| || |__| || |  | | |    | |\  |_| |_ 
-  \_____\____/  |_| \_|_____\____/ |_|  |_|_|    |_| \_|_____|
-                                                              
-                </pre>
-                <!-- Container for your new ASCII animation -->
-                <div id="ascii-animation-container" style="display: none;">
-                    <pre id="ascii-animation"></pre>
-                </div>
-                <div id="startup-text"></div>
+            <div id="startup-text"></div>
+            <div id="ascii-art"></div>
+            <div id="ascii-animation-container" style="display: none;">
+                <pre></pre>
             </div>
             <div id="output"></div>
             <div id="input-line">
-                <span id="prompt">CRNL:/~$&nbsp;</span>
+                <span id="prompt">CRNL:/~$</span>
                 <input type="text" id="userInput" autocomplete="off" autofocus>
                 <span class="cursor"></span>
             </div>
         </div>
-
-        <footer id="terminal-footer">
-            <span>USER: Operator_7</span>
-            <span>ACCESS_LEVEL: GUEST</span>
-        </footer>
+        
+        <div id="terminal-footer">
+            <span>&copy; 2025 CRNL Team</span>
+            <span>Connected to Cortex Relay Node</span>
+        </div>
     </div>
-
-    <!-- Link to your new ascii.js file (as a module) -->
-    <script type="module" src="ascii.js"></script>
-    <!-- Link to your main script file (as a module) -->
+    
     <script type="module" src="script.js"></script>
 </body>
 </html>
