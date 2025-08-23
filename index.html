@@ -3,44 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRNL.SYS Retro Terminal</title>
+    <title>Terminal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <canvas id="matrix-bg"></canvas>
+
     <div class="crt-container">
-        <div class="corner top-left"></div>
-        <div class="corner top-right"></div>
-        <div class="corner bottom-left"></div>
-        <div class="corner bottom-right"></div>
-        
-        <div id="terminal-header">
-            <span>Retro Style Terminal [LOADED]</span>
-            <span id="system-status">STATUS: ONLINE</span>
-        </div>
-        
+        <header id="terminal-header">
+            <span>TERMINAL :: SYS.INTERFACE</span>
+            <span id="system-status">STATUS: SECURE</span>
+        </header>
+
         <div id="terminal">
-            <div id="startup-text"></div>
-            <div id="ascii-art"></div>
-            <div id="ascii-animation-container" style="display: none;">
-                <pre></pre>
-            </div>
             <div id="output"></div>
             <div id="input-line">
-                <span id="prompt">CRNL:/~$</span>
+                <span id="prompt">&gt; USER:</span>
                 <input type="text" id="userInput" autocomplete="off" autofocus>
                 <span class="cursor"></span>
             </div>
         </div>
-        
-        <div id="terminal-footer">
-            <span>&copy; 2025 CRNL Team</span>
-            <span>Connected to Cortex Relay Node</span>
-        </div>
+
+        <footer id="terminal-footer">
+            <span id="footer-left">Operator_7</span>
+            <span id="footer-right">UTC: <span id="utc-time"></span></span>
+        </footer>
     </div>
-    
+
     <script type="module" src="script.js"></script>
 </body>
 </html>
