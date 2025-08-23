@@ -107,7 +107,6 @@ body::before {
 /* Glitch effect for the main title */
 .glitch {
     font-family: 'VT323', monospace;
-    /* font-size is now handled by utility classes in the HTML */
     position: relative;
     color: #ff00c1;
     text-shadow: 0 0 5px #ff00c1, 0 0 10px #ff00c1;
@@ -158,10 +157,35 @@ body::before {
     100% { transform: skewX(0deg); }
 }
 
+/* --- Styles for interactive command links --- */
+.command-link {
+    cursor: pointer;
+    position: relative;
+    color: #ff00c1; /* Same as accent color */
+    text-shadow: 0 0 5px #ff00c1;
+    transition: all 0.2s ease-in-out;
+}
+
+.command-link:hover {
+    color: #00ffff; /* Change color on hover */
+    text-shadow: 0 0 8px #00ffff;
+    animation: glitch-hover 0.25s infinite;
+}
+
+/* --- Faster, more subtle glitch for hover effect --- */
+@keyframes glitch-hover {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(-1px, 1px); }
+    50% { transform: translate(1px, -1px); }
+    75% { transform: translate(1px, 1px); }
+    100% { transform: translate(0, 0); }
+}
+
 /* Input line styling */
 #input-line {
     display: flex;
     align-items: center;
+    margin-top: 0.5rem;
 }
 
 #prompt {
@@ -198,6 +222,8 @@ body::before {
 .command-output {
     white-space: pre-wrap;
     word-break: break-all;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
 }
 .command-output .accent {
     color: #ff00c1;
@@ -207,22 +233,15 @@ body::before {
     color: #00ffff;
     text-shadow: 0 0 5px #00ffff;
 }
-
-/* Utility classes that were inlined with Tailwind */
-.text-sm { font-size: 0.875rem; }
-.md\:text-base {
-    @media (min-width: 768px) {
-        font-size: 1rem;
-    }
-}
-.mt-2 { margin-top: 0.5rem; }
-.mt-1 { margin-top: 0.25rem; }
-.mb-2 { margin-bottom: 0.5rem; }
 .text-cyan-400 { color: #22d3ee; }
 .text-red-500 { color: #ef4444; }
 .text-2xl { font-size: 1.5rem; }
-.sm\:text-4xl {
-    @media (min-width: 640px) {
+.sm-text-4xl {
+    font-size: 2.25rem;
+}
+
+@media (min-width: 640px) {
+    .sm-text-4xl {
         font-size: 2.25rem;
     }
 }

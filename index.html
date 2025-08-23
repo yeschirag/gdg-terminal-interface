@@ -30,7 +30,7 @@
 
         <div id="terminal">
             <div class="command-output">
-                <pre id="ascii-art" class="text-sm md:text-base">
+                <pre id="ascii-art">
    _____ ____    _   _ _____ ____   __  __ _____ _   _ _____ 
   / ____/ __ \  | \ | |_   _/ __ \ |  \/  |  __ \ \ | |_   _|
  | |   | |  | | |  \| | | || |  | || \  / | |__) |  \| | | |  
@@ -39,10 +39,14 @@
   \_____\____/  |_| \_|_____\____/ |_|  |_|_|    |_| \_|_____|
                                                               
                 </pre>
+                <!-- Container for your new ASCII animation -->
+                <div id="ascii-animation-container" style="display: none;">
+                    <pre id="ascii-animation"></pre>
+                </div>
                 <div id="startup-text"></div>
             </div>
             <div id="output"></div>
-            <div id="input-line" class="mt-2">
+            <div id="input-line">
                 <span id="prompt">CRNL:/~$&nbsp;</span>
                 <input type="text" id="userInput" autocomplete="off" autofocus>
                 <span class="cursor"></span>
@@ -55,7 +59,9 @@
         </footer>
     </div>
 
-    <!-- Link to your external JavaScript file -->
-    <script src="script.js"></script>
+    <!-- Link to your new ascii.js file (as a module) -->
+    <script type="module" src="ascii.js"></script>
+    <!-- Link to your main script file (as a module) -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
