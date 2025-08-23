@@ -4,23 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRNL.SYS // CORTEX RELAY NODE LINK</title>
-    <!-- Tailwind CSS for rapid, responsive styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Link to your external CSS file -->
+    <link rel="stylesheet" href="style.css">
     <!-- Google Fonts for the retro monospace look -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-black text-green-400 p-2 sm:p-4">
+<body>
     <!-- 
         SECRET KEY - STEP 1:
         A good hacker always checks the source. 
         Are you a detective? Try the 'scan' command. 
     -->
-    <div id="terminal" class="bg-black bg-opacity-75">
-        <div class="command-output">
-            <pre id="ascii-art" class="text-sm md:text-base">
+    <div class="crt-container">
+        <div class="corner top-left"></div>
+        <div class="corner top-right"></div>
+        <div class="corner bottom-left"></div>
+        <div class="corner bottom-right"></div>
+
+        <header id="terminal-header">
+            <span>CRNL.SYS // CORTEX RELAY NODE LINK</span>
+            <span id="system-status">STATUS: SECURE</span>
+        </header>
+
+        <div id="terminal">
+            <div class="command-output">
+                <pre id="ascii-art" class="text-sm md:text-base">
    _____ ____    _   _ _____ ____   __  __ _____ _   _ _____ 
   / ____/ __ \  | \ | |_   _/ __ \ |  \/  |  __ \ \ | |_   _|
  | |   | |  | | |  \| | | || |  | || \  / | |__) |  \| | | |  
@@ -28,18 +38,24 @@
  | |___| |__| | | |\  |_| || |__| || |  | | |    | |\  |_| |_ 
   \_____\____/  |_| \_|_____\____/ |_|  |_|_|    |_| \_|_____|
                                                               
-            </pre>
-            <div id="startup-text"></div>
+                </pre>
+                <div id="startup-text"></div>
+            </div>
+            <div id="output"></div>
+            <div id="input-line" class="mt-2">
+                <span id="prompt">CRNL:/~$&nbsp;</span>
+                <input type="text" id="userInput" autocomplete="off" autofocus>
+                <span class="cursor"></span>
+            </div>
         </div>
-        <div id="output"></div>
-        <div id="input-line" class="mt-2">
-            <span id="prompt">CRNL:/~$&nbsp;</span>
-            <input type="text" id="userInput" autocomplete="off" autofocus>
-            <span class="cursor"></span>
-        </div>
+
+        <footer id="terminal-footer">
+            <span>USER: Operator_7</span>
+            <span>ACCESS_LEVEL: GUEST</span>
+        </footer>
     </div>
 
-    <script src="script.js">
-    </script>
+    <!-- Link to your external JavaScript file -->
+    <script src="script.js"></script>
 </body>
 </html>
