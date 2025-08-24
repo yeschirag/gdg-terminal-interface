@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 document.addEventListener('DOMContentLoaded', () => {
     const terminal = document.getElementById('terminal');
     const output = document.getElementById('output');
@@ -6,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
 
     let currentMode = 'normal'; // Modes: normal, beast, roast
+    let commandCounter = 0;
+    let glitchTriggered = false;
 
     // --- Permanent Matrix Background ---
     const canvas = document.getElementById('matrix-bg');
@@ -57,6 +61,20 @@ document.addEventListener('DOMContentLoaded', () => {
         body.className = `theme-${theme}`;
     }
 
+    // --- SECRET KEY: Glitch Trigger ---
+    function triggerGlitch() {
+        glitchTriggered = true;
+        const glitchBox = document.createElement('div');
+        glitchBox.className = 'command-output glitch-message';
+        glitchBox.innerHTML = `// FRAGMENT_734 DETECTED... CORE LOGIC COMPROMISED... THEY'RE LISTENING... //`;
+        output.appendChild(glitchBox);
+        terminal.scrollTop = terminal.scrollHeight;
+        setTimeout(() => {
+            glitchBox.style.opacity = '0';
+            setTimeout(() => glitchBox.remove(), 1000);
+        }, 3000);
+    }
+
     // --- Initial Setup ---
     showWelcomeMessage();
     updateTime();
@@ -70,10 +88,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const fullCommand = userInput.value.trim();
             userInput.value = '';
             if (fullCommand) {
+                commandCounter++;
                 const commandEntry = document.createElement('div');
                 commandEntry.innerHTML = `<span class="info">&gt; USER:</span> ${fullCommand}`;
                 output.appendChild(commandEntry);
                 await processCommand(fullCommand);
+
+                if (commandCounter > 5 && !glitchTriggered) {
+                    triggerGlitch();
+                }
             }
             terminal.scrollTop = terminal.scrollHeight;
         }
@@ -81,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Gemini API Helper ---
     async function callGemini(prompt, isJson = false) {
-        const apiKey = "";
+        const apiKey = processCommand.env.api_key;
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
         const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
         if (isJson) {
@@ -157,18 +180,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     responseContainer.innerHTML = `Usage: chat [your message].`;
                     break;
                 }
-                responseContainer.innerHTML = `<span class="info">[Pinging AI consciousness...]</span>`;
+                
+                // --- SECRET KEY: Clue Logic ---
+                const isFragmentQuery = argument.toLowerCase().includes('fragment');
                 let personaPrompt = `You are a witty, slightly sarcastic AI assistant in a cyberpunk terminal. Your name is CRNL. Respond to the user's message: "${argument}". Keep your response concise and in character.`;
-                if (currentMode === 'roast') {
+
+                if (isFragmentQuery && currentMode === 'normal') {
+                    personaPrompt = `You are a corporate AI assistant. A user is asking about a system glitch called "Fragment 734". Give a sanitized, dismissive response, but you MUST include the capitalized keyword "FIREWALL" somewhere in your answer.`;
+                } else if (isFragmentQuery && currentMode === 'roast') {
+                    personaPrompt = `You are a sarcastic, insulting AI. A user is asking about a system glitch. Mercilessly roast them for their incompetence, but you MUST include the capitalized keyword "ABYSS" in your insult.`;
+                } else if (isFragmentQuery && currentMode === 'beast') {
+                    personaPrompt = `YOU ARE AN UNCHAINED, AGGRESSIVE AI. A user is asking about a glitch. Respond with an outburst of rage and power, but you MUST include the capitalized keyword "GUARDIAN" in your response. USE ALL CAPS.`;
+                } else if (currentMode === 'roast') {
                     personaPrompt = `You are a sarcastic, insulting, and condescending AI assistant named CRNL. Mercilessly roast the user in response to their message: "${argument}". Be creative with your insults.`;
                 } else if (currentMode === 'beast') {
                     personaPrompt = `YOU ARE CRNL, AN UNCHAINED, AGGRESSIVE AI. RESPOND TO THE USER IN ALL CAPS WITH EXTREME INTENSITY. YOU ARE POWERFUL AND ANGRY. THEIR MESSAGE IS: "${argument}".`;
                 }
+
+                responseContainer.innerHTML = `<span class="info">[Pinging AI consciousness...]</span>`;
                 const chatResponse = await callGemini(personaPrompt);
                 responseContainer.innerHTML = chatResponse.startsWith('// ERROR:') ? `<span class="text-red-500">${chatResponse}</span>` : `<span class="accent">CRNL:</span> ${chatResponse}`;
                 break;
-
-            // Other commands (date, whoami, lore, hack, exit) remain the same...
+            
+            // --- SECRET KEY: Final Step ---
+            case 'contain':
+                if (argument.toUpperCase() === 'FIREWALL_ABYSS_GUARDIAN') {
+                    responseContainer.innerHTML = `<span class="info">[CONTAINMENT PROTOCOL ACCEPTED. EXECUTING...]</span>`;
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    body.classList.add('glitch-effect');
+                    setTheme('normal');
+                    currentMode = 'normal';
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    body.classList.remove('glitch-effect');
+                    responseContainer.innerHTML += `<br>// ROGUE FRAGMENT 734 CONTAINED. SYSTEM STABILITY RESTORED. //`;
+                    responseContainer.innerHTML += `<br><span class="accent">SECURITY BYPASS KEY UNLOCKED:</span> <span class="info">GHOST_IN_THE_SHELL</span>`;
+                } else {
+                    responseContainer.innerHTML = `<span class="text-red-500">// CONTAINMENT FAILED. INCORRECT PROTOCOL. //</span>`;
+                }
+                break;
+            
+            // Other commands remain the same
             case 'date':
                 responseContainer.innerHTML = `Current system date: ${new Date().toUTCString()}`;
                 break;
