@@ -1,12 +1,9 @@
 /* --- Color Palette & Global Styles --- */
 :root {
     --background: #0a0418;
-    --primary: #00ffff;
-    /* Cyan */
-    --secondary: #ff00c1;
-    /* Magenta */
-    --accent: #9e00ff;
-    /* Purple */
+    --primary: #00ffff; /* Cyan */
+    --secondary: #ff00c1; /* Magenta */
+    --accent: #9e00ff; /* Purple */
     --text: #d0d0ff;
     --glow: 0 0 3px var(--primary), 0 0 5px var(--primary);
 }
@@ -14,12 +11,9 @@
 /* --- Beast Mode Theme --- */
 .theme-beast {
     --background: #1a0202;
-    --primary: #ff0000;
-    /* Intense Red */
-    --secondary: #ff6a00;
-    /* Orange */
-    --accent: #ffc400;
-    /* Yellow */
+    --primary: #ff0000; /* Intense Red */
+    --secondary: #ff6a00; /* Orange */
+    --accent: #ffc400; /* Yellow */
     --text: #ffdddd;
     --glow: 0 0 4px var(--primary), 0 0 7px var(--primary);
 }
@@ -27,12 +21,9 @@
 /* --- Roast Mode Theme --- */
 .theme-roast {
     --background: #190e01;
-    --primary: #ffc400;
-    /* Yellow */
-    --secondary: #d455ff;
-    /* Light Purple */
-    --accent: #ff6a00;
-    /* Orange */
+    --primary: #ffc400; /* Yellow */
+    --secondary: #d455ff; /* Light Purple */
+    --accent: #ff6a00; /* Orange */
     --text: #ffe9c2;
     --glow: 0 0 4px var(--primary), 0 0 7px var(--primary);
 }
@@ -60,40 +51,29 @@ body {
 
 /* --- Glitch effect for puzzle payoff --- */
 @keyframes screen-glitch {
-    0% {
-        transform: translate(0, 0);
-        opacity: 1;
-    }
-
-    25% {
-        transform: translate(-2px, 2px);
-        opacity: 0.8;
-    }
-
-    50% {
-        transform: translate(2px, -2px);
-        opacity: 1;
-    }
-
-    75% {
-        transform: translate(1px, -1px);
-        opacity: 0.9;
-    }
-
-    100% {
-        transform: translate(0, 0);
-        opacity: 1;
-    }
+    0% { transform: translate(0, 0); opacity: 1; }
+    25% { transform: translate(-2px, 2px); opacity: 0.8; }
+    50% { transform: translate(2px, -2px); opacity: 1; }
+    75% { transform: translate(1px, -1px); opacity: 0.9; }
+    100% { transform: translate(0, 0); opacity: 1; }
 }
-
 .glitch-effect {
     animation: screen-glitch 0.2s infinite;
 }
-
 .glitch-message {
     color: #ff0000;
     text-shadow: 0 0 5px #ff0000;
     transition: opacity 1s ease-out;
+}
+
+/* --- NEW: Unstable Beast Mode Effect --- */
+@keyframes screen-shake {
+    0%, 100% { transform: translate(0, 0); }
+    10%, 30%, 50%, 70%, 90% { transform: translate(-1px, 1px); }
+    20%, 40%, 60%, 80% { transform: translate(1px, -1px); }
+}
+.theme-beast .crt-container {
+    animation: screen-shake 0.3s infinite;
 }
 
 
@@ -124,11 +104,9 @@ body {
     backdrop-filter: blur(2px);
     transition: background-color 0.5s ease;
 }
-
 .theme-beast .crt-container {
     background: rgba(26, 2, 2, 0.6);
 }
-
 .theme-roast .crt-container {
     background: rgba(25, 14, 1, 0.6);
 }
@@ -148,20 +126,16 @@ body {
     text-shadow: 0 0 3px var(--primary);
     transition: all 0.5s ease;
 }
-
 #terminal-header {
     border-radius: 8px 8px 0 0;
 }
-
 #terminal-footer {
     border-radius: 0 0 8px 8px;
 }
-
 .theme-beast #terminal-header,
 .theme-beast #terminal-footer {
     background: linear-gradient(90deg, rgba(255, 106, 0, 0.3), rgba(255, 0, 0, 0.3));
 }
-
 .theme-roast #terminal-header,
 .theme-roast #terminal-footer {
     background: linear-gradient(90deg, rgba(212, 85, 255, 0.3), rgba(255, 196, 0, 0.3));
@@ -179,15 +153,12 @@ body {
     -ms-overflow-style: none;
     transition: all 0.5s ease;
 }
-
 #terminal::-webkit-scrollbar {
     display: none;
 }
-
 .theme-beast #terminal {
     background-color: rgba(26, 2, 2, 0.8);
 }
-
 .theme-roast #terminal {
     background-color: rgba(25, 14, 1, 0.8);
 }
@@ -214,7 +185,6 @@ body {
     padding: 10px 15px;
     border-radius: 4px;
     white-space: pre;
-    /* Allows for newlines in the tooltip */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -222,7 +192,6 @@ body {
     font-size: 0.9rem;
     box-shadow: 0 0 5px var(--accent);
     width: max-content;
-    /* Adjust width to content */
 }
 
 .command-link:hover::after {
@@ -236,13 +205,11 @@ body {
     display: flex;
     align-items: center;
 }
-
 #prompt {
     color: var(--primary);
     text-shadow: var(--glow);
     margin-right: 0.5rem;
 }
-
 #userInput {
     background: transparent;
     border: none;
@@ -252,8 +219,6 @@ body {
     font-family: 'Share Tech Mono', monospace;
     font-size: 1rem;
 }
-
-/* --- NEW: Glitchy Cursor --- */
 .cursor {
     width: 10px;
     height: 1.2em;
@@ -262,37 +227,31 @@ body {
     vertical-align: middle;
     animation: glitch-cursor 200ms infinite;
 }
-
 @keyframes glitch-cursor {
     0% {
         background: var(--primary);
         box-shadow: var(--glow);
         transform: translate(0, 0);
     }
-
     20% {
         background: var(--secondary);
         box-shadow: 0 0 5px var(--secondary);
         transform: translate(-1px, 1px);
     }
-
     40% {
         background: var(--primary);
         box-shadow: var(--glow);
         transform: translate(1px, -1px);
     }
-
     60% {
         background: transparent;
         box-shadow: none;
     }
-
     80% {
         background: var(--primary);
         box-shadow: var(--glow);
         transform: translate(1px, 1px);
     }
-
     100% {
         background: var(--primary);
         box-shadow: var(--glow);
@@ -306,17 +265,14 @@ body {
     word-break: break-all;
     margin-bottom: 0.5rem;
 }
-
 .command-output .accent {
     color: var(--secondary);
     text-shadow: 0 0 3px var(--secondary);
 }
-
 .command-output .info {
     color: var(--primary);
     text-shadow: var(--glow);
 }
-
 .text-red-500 {
     color: #ff4444;
     text-shadow: 0 0 5px #ff4444;

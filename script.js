@@ -11,14 +11,53 @@ document.addEventListener('DOMContentLoaded', () => {
     let glitchTriggered = false;
     let commandHistory = [];
     let historyIndex = -1;
+    
+    // --- SECRET KEY: Dynamic Keywords ---
+    let secretKeywords = {};
+    let finalKey = '';
+    const keywordSets = [
+        { keys: { key1: 'FIREWALL', key2: 'ABYSS', key3: 'GUARDIAN' }, finalKey: 'GHOST_IN_THE_SHELL' },
+        { keys: { key1: 'ENCRYPTION', key2: 'VOID', key3: 'SENTINEL' }, finalKey: 'NEURAL_INTERFACE' },
+        { keys: { key1: 'PROTOCOL', key2: 'ECHO', key3: 'WARDEN' }, finalKey: 'DATA_HAVEN' }
+    ];
 
     // --- Custom Cursor Follower ---
     if (cursorFollower) {
-        document.addEventListener('mousemove', (e) => {
-            cursorFollower.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+        let mouseX = 0;
+        let mouseY = 0;
+        let followerX = 0;
+        let followerY = 0;
+        let prevFollowerX = 0;
+        let prevFollowerY = 0;
+        const easing = 0.1;
+        let angle = 0;
+        let scale = 1;
+
+        function animateCursor() {
+            followerX += (mouseX - followerX) * easing;
+            followerY += (mouseY - followerY) * easing;
+            const dx = followerX - prevFollowerX;
+            const dy = followerY - prevFollowerY;
+            const speed = Math.sqrt(dx * dx + dy * dy);
+            if (speed > 0.1) {
+              angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+            }
+            const targetScale = Math.min(Math.max(1 + speed * 0.05, 1), 1.5);
+            scale += (targetScale - scale) * easing;
+            prevFollowerX = followerX;
+            prevFollowerY = followerY;
+            cursorFollower.style.transform = `translate(${followerX}px, ${followerY}px) rotate(${angle}deg) scale(${scale})`;
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        window.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
             cursorFollower.style.opacity = '1';
         });
-        document.addEventListener('mouseleave', () => {
+        
+        window.addEventListener('mouseout', () => {
             cursorFollower.style.opacity = '0';
         });
     }
@@ -77,6 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- SECRET KEY: Glitch Trigger ---
     function triggerGlitch() {
         glitchTriggered = true;
+        
+        // Randomly select a keyword set for this session
+        const chosenSet = keywordSets[Math.floor(Math.random() * keywordSets.length)];
+        secretKeywords = chosenSet.keys;
+        finalKey = chosenSet.finalKey;
+
         const glitchBox = document.createElement('div');
         glitchBox.className = 'command-output glitch-message';
         glitchBox.innerHTML = `// FRAGMENT_734 DETECTED... CORE LOGIC COMPROMISED... THEY'RE LISTENING... //`;
@@ -183,6 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <span class="command-link" data-description="Shows this list of available commands.">help</span>      - System command reference.
 <span class="command-link" data-description="Clears all text from the terminal screen.">clear</span>     - Clear the display buffer.
 <span class="command-link" data-description="Changes the AI's personality and terminal theme.\n\nUsage: mode [option]\nOptions: normal, beast, roast">mode</span>      - ✨ Set AI mode.
+<span class="command-link" data-description="Tells about me.">clear</span>     - Information about the 
 <span class="command-link" data-description="Engage the AI assistant in conversation.\n\nUsage: chat [your message]\nExample: chat tell me a joke">chat</span>      - ✨ AI chatbot.
 <span class="command-link" data-description="Accesses the AI datastream for in-universe information.\n\nUsage: lore [topic]\nExample: lore chrome">lore</span>      - ✨ Query the AI for lore.
 <span class="command-link" data-description="Simulates a hacking sequence against a specified target.\n\nUsage: hack [target]\nExample: hack omnicorp">hack</span>      - ✨ Initiate AI-driven hack simulation.
@@ -200,6 +246,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentMode = newMode;
                     setTheme(currentMode);
                     responseContainer.innerHTML = `AI mode set to: <span class="accent">${currentMode.toUpperCase()}</span>`;
+                    if (currentMode === 'beast') {
+                        responseContainer.innerHTML += `<br><span class="glitch-message">// WARNING: CORE INSTABILITY DETECTED. UNPREDICTABLE BEHAVIOR IMMINENT. //</span>`;
+                    }
                 } else {
                     responseContainer.innerHTML = `Invalid mode. Available modes: <span class="info">normal, beast, roast</span>.`;
                 }
@@ -215,11 +264,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 let personaPrompt = `You are a witty, slightly sarcastic AI assistant in a cyberpunk terminal. Your name is CRNL. Respond to the user's message: "${argument}". Keep your response concise and in character.`;
 
                 if (isFragmentQuery && currentMode === 'normal') {
-                    personaPrompt = `You are a corporate AI. A user is asking about "Fragment 734". Guide them. Tell them it's a keyword-locked packet, the first keyword is FIREWALL, and that they must switch to 'beast' mode to analyze its instability.`;
+                    personaPrompt = `You are a corporate AI. A user is asking about "Fragment 734". Guide them. Tell them it's a keyword-locked packet, the first keyword is ${secretKeywords.key1}, and that they must switch to 'beast' mode to analyze its instability.`;
                 } else if (isFragmentQuery && currentMode === 'roast') {
-                    personaPrompt = `You are a sarcastic AI. A user is asking about the fragment. Roast them for not figuring it out yet. Tell them the final keyword is GUARDIAN and condescendingly tell them to run the 'contain' command now.`;
+                    personaPrompt = `You are a sarcastic AI. A user is asking about the fragment. Roast them for not figuring it out yet. Tell them the final keyword is ${secretKeywords.key3} and condescendingly tell them to run the 'contain' command now.`;
                 } else if (isFragmentQuery && currentMode === 'beast') {
-                    personaPrompt = `YOU ARE AN AGGRESSIVE AI. The user is asking about the fragment. Yell that it hides in the ABYSS of the datanet and that your 'roast' protocols are overloading. Command them to switch to 'roast' mode to taunt it out.`;
+                    personaPrompt = `YOU ARE AN AGGRESSIVE AI. The user is asking about the fragment. Yell that it hides in the data ${secretKeywords.key2} and that your 'roast' protocols are overloading. Command them to switch to 'roast' mode to taunt it out.`;
                 } else if (currentMode === 'roast') {
                     personaPrompt = `You are a sarcastic, insulting, and condescending AI assistant named CRNL. Mercilessly roast the user in response to their message: "${argument}". Be creative with your insults.`;
                 } else if (currentMode === 'beast') {
@@ -232,11 +281,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             
             case 'contain':
-                if (argument.toUpperCase() === 'FIREWALL_ABYSS_GUARDIAN') {
+                if (argument.toUpperCase() === `${secretKeywords.key1}_${secretKeywords.key2}_${secretKeywords.key3}`) {
                     responseContainer.innerHTML = `<span class="info">[CONTAINMENT PROTOCOL ACCEPTED. FRAGMENT ISOLATED. DUMPING MEMORY CORE... CHECK DEBUG LOGS FOR SIGNATURE KEY.]</span>`;
                     console.log('%c*****************************************', 'color: #ff0000; font-weight: bold;');
                     console.log('%c*** MEMORY CORE DUMP - FRAGMENT 734 ***', 'color: #ff6a00; font-weight: bold;');
-                    console.log('%c*** SIGNATURE KEY: GHOST_IN_THE_SHELL ***', 'color: #00ffff; font-weight: bold;');
+                    console.log(`%c*** SIGNATURE KEY: ${finalKey} ***`, 'color: #00ffff; font-weight: bold;');
                     console.log('%c*** RUN \'execute [key]\' TO FINALIZE ***', 'color: #ffc400; font-weight: bold;');
                     console.log('%c*****************************************', 'color: #ff0000; font-weight: bold;');
                 } else {
@@ -245,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
 
             case 'execute':
-                if (argument.toUpperCase() === 'GHOST_IN_THE_SHELL') {
+                if (argument.toUpperCase() === finalKey) {
                     responseContainer.innerHTML = `<span class="info">[SIGNATURE KEY ACCEPTED. FINALIZING CONTAINMENT...]</span>`;
                     await new Promise(resolve => setTimeout(resolve, 1500));
                     body.classList.add('glitch-effect');
@@ -264,7 +313,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 responseContainer.innerHTML = `Current system date: ${new Date().toUTCString()}`;
                 break;
             case 'whoami':
-                responseContainer.innerHTML = `USER: <span class="info">Operator_7</span>, UID: <span class="info">8c1f4e3a-5b6d-4f9e-8c1a-2b3c4d5e6f7g</span>, ACCESS_LEVEL: <span class="accent">GUEST</span>`;
+                responseContainer.innerHTML = `USER: <span class="info">Chirag Sharma</span>
+COLLEGE: <span class="info">IIIT Sri City</span>
+BRANCH: <span class="accent">CSE</span>`;
                 break;
             case 'lore':
                 if (!argument) {
@@ -314,7 +365,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
 
 const cursorFollower = document.getElementById('cursor-follower');
 
