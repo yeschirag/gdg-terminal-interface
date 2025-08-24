@@ -4,12 +4,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('userInput');
     const utcTimeElement = document.getElementById('utc-time');
     const body = document.body;
+    const cursorFollower = document.getElementById('cursor-follower');
 
     let currentMode = 'normal'; // Modes: normal, beast, roast
     let commandCounter = 0;
     let glitchTriggered = false;
     let commandHistory = [];
     let historyIndex = -1;
+
+    // --- Custom Cursor Follower ---
+    if (cursorFollower) {
+        document.addEventListener('mousemove', (e) => {
+            cursorFollower.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+            cursorFollower.style.opacity = '1';
+        });
+        document.addEventListener('mouseleave', () => {
+            cursorFollower.style.opacity = '0';
+        });
+    }
+
 
     // --- Permanent Matrix Background ---
     const canvas = document.getElementById('matrix-bg');
@@ -121,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Gemini API Helper ---
     async function callGemini(prompt, isJson = false) {
-        const apiKey = "AIzaSyA29tZWVdrXydY5NGz3VZ3wYffzZg2eyNk";
+        const apiKey = "";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
         const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
         if (isJson) {
@@ -301,3 +314,81 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+
+const cursorFollower = document.getElementById('cursor-follower');
+
+        // Target positions for the cursor
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // Current positions of the follower (these will lag behind the target)
+        let followerX = 0;
+        let followerY = 0;
+        
+        // Previous positions to calculate velocity and angle
+        let prevFollowerX = 0;
+        let prevFollowerY = 0;
+
+        // Easing factor for the smooth follow effect
+        const easing = 0.1;
+
+        // Variables for rotation and scaling
+        let angle = 0;
+        let scale = 1;
+
+        // The animation loop function
+        function animate() {
+            // Make the follower move towards the mouse position
+            followerX += (mouseX - followerX) * easing;
+            followerY += (mouseY - followerY) * easing;
+
+            // Calculate the difference in position from the last frame
+            const dx = followerX - prevFollowerX;
+            const dy = followerY - prevFollowerY;
+
+            // Calculate the speed (distance moved)
+            const speed = Math.sqrt(dx * dx + dy * dy);
+
+            // Calculate the angle based on the direction of movement
+            // Only update angle if there is movement
+            if (speed > 0.1) {
+              angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90; // +90 degree offset to make the arrow point forward
+            }
+            
+            // Calculate the scale based on speed. It will stretch up to 1.5x
+            // The clamp function ensures the scale doesn't go below 1 or above 1.5
+            const targetScale = Math.min(Math.max(1 + speed * 0.05, 1), 1.5);
+            scale += (targetScale - scale) * easing; // Ease the scaling effect
+
+            // Update the previous positions for the next frame
+            prevFollowerX = followerX;
+            prevFollowerY = followerY;
+
+            // Apply all transformations to the cursor element
+            cursorFollower.style.transform = `
+                translate(${followerX}px, ${followerY}px) 
+                rotate(${angle}deg) 
+                scale(${scale})
+            `;
+
+            // Request the next frame to continue the animation
+            requestAnimationFrame(animate);
+        }
+
+        // Start the animation loop
+        animate();
+
+        // Update mouse positions when the mouse moves
+        window.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            
+            // Make the cursor visible once the mouse enters the screen
+            cursorFollower.style.opacity = '1';
+        });
+        
+        // Hide the cursor when the mouse leaves the window
+        window.addEventListener('mouseout', () => {
+            cursorFollower.style.opacity = '0';
+        });
