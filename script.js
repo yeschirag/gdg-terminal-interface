@@ -1,27 +1,22 @@
+import { CanvAscii } from './ascii.js'
+
 document.addEventListener('DOMContentLoaded', () => {
     const terminal = document.getElementById('terminal');
     const output = document.getElementById('output');
     const userInput = document.getElementById('userInput');
     const utcTimeElement = document.getElementById('utc-time');
     const body = document.body;
-    const cursorFollower = document.getElementById('cursor-follower');
+
+    const asciiPopup = document.getElementById('ascii-popup');
+    const asciiContainer = document.getElementById('ascii-container');
+    const closeAsciiButton = document.getElementById('close-ascii');
+    let activeAsciiEffect = null;
 
     let currentMode = 'normal'; // Modes: normal, beast, roast
     let commandCounter = 0;
     let glitchTriggered = false;
     let commandHistory = [];
     let historyIndex = -1;
-
-    // --- Custom Cursor Follower ---
-    if (cursorFollower) {
-        document.addEventListener('mousemove', (e) => {
-            cursorFollower.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-            cursorFollower.style.opacity = '1';
-        });
-        document.addEventListener('mouseleave', () => {
-            cursorFollower.style.opacity = '0';
-        });
-    }
 
 
     // --- Permanent Matrix Background ---
@@ -134,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Gemini API Helper ---
     async function callGemini(prompt, isJson = false) {
-        const apiKey = "";
+        const apiKey = "AIzaSyA29tZWVdrXydY5NGz3VZ3wYffzZg2eyNk";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
         const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
         if (isJson) {
@@ -230,6 +225,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const chatResponse = await callGemini(personaPrompt);
                 responseContainer.innerHTML = chatResponse.startsWith('// ERROR:') ? `<span class="text-red-500">${chatResponse}</span>` : `<span class="accent">CRNL:</span> ${chatResponse}`;
                 break;
+
+            case 'asciify':
+                if (!argument) {
+                    responseContainer.innerHTML = `Usage: asciify [text]. Example: <span class="info">asciify hello</span>`;
+                    break;
+                }
+                responseContainer.innerHTML = `<span class="info">[Rendering 3D ASCII for: ${argument}]</span>`;
+                startAsciiEffect(argument);
+                break;
             
             case 'contain':
                 if (argument.toUpperCase() === 'FIREWALL_ABYSS_GUARDIAN') {
@@ -313,6 +317,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
         }
     }
+
+        function startAsciiEffect(text) {
+        if (activeAsciiEffect) {
+            activeAsciiEffect.dispose();
+        }
+        const settings = { text, asciiFontSize: 8, textFontSize: 200, textColor: '#fdf9f3', planeBaseHeight: 8, enableWaves: true };
+        asciiPopup.style.display = 'flex';
+        activeAsciiEffect = new CanvAscii(settings, asciiContainer);
+        activeAsciiEffect.load();
+    }
+
+    closeAsciiButton.addEventListener('click', () => {
+        asciiPopup.style.display = 'none';
+        if (activeAsciiEffect) {
+            activeAsciiEffect.dispose();
+            activeAsciiEffect = null;
+        }
+    });
 });
 
 
