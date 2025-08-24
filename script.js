@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 document.addEventListener('DOMContentLoaded', () => {
     const terminal = document.getElementById('terminal');
     const output = document.getElementById('output');
@@ -10,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentMode = 'normal'; // Modes: normal, beast, roast
     let commandCounter = 0;
     let glitchTriggered = false;
+    let commandHistory = [];
+    let historyIndex = -1;
 
     // --- Permanent Matrix Background ---
     const canvas = document.getElementById('matrix-bg');
@@ -86,8 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
     userInput.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
             const fullCommand = userInput.value.trim();
-            userInput.value = '';
             if (fullCommand) {
+                commandHistory.push(fullCommand);
+                historyIndex = commandHistory.length;
                 commandCounter++;
                 const commandEntry = document.createElement('div');
                 commandEntry.innerHTML = `<span class="info">&gt; USER:</span> ${fullCommand}`;
@@ -98,13 +99,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     triggerGlitch();
                 }
             }
+            userInput.value = '';
             terminal.scrollTop = terminal.scrollHeight;
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (historyIndex > 0) {
+                historyIndex--;
+                userInput.value = commandHistory[historyIndex];
+            }
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (historyIndex < commandHistory.length - 1) {
+                historyIndex++;
+                userInput.value = commandHistory[historyIndex];
+            } else {
+                historyIndex = commandHistory.length;
+                userInput.value = '';
+            }
         }
     });
 
     // --- Gemini API Helper ---
     async function callGemini(prompt, isJson = false) {
-        const apiKey = processCommand.env.api_key;
+        const apiKey = "AIzaSyA29tZWVdrXydY5NGz3VZ3wYffzZg2eyNk";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
         const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
         if (isJson) {
@@ -150,12 +167,12 @@ document.addEventListener('DOMContentLoaded', () => {
         switch (command) {
             case 'help':
                 responseContainer.innerHTML = `
-<span class="command-link" data-description="Shows this list of commands.">help</span>      - System command reference.
+<span class="command-link" data-description="Shows this list of available commands.">help</span>      - System command reference.
 <span class="command-link" data-description="Clears all text from the terminal screen.">clear</span>     - Clear the display buffer.
-<span class="command-link" data-description="Changes the AI's personality and terminal theme.">mode</span>      - ✨ Set AI mode. (e.g., mode beast)
-<span class="command-link" data-description="Engage the AI assistant in conversation.">chat</span>      - ✨ AI chatbot. (e.g., chat tell me a joke)
-<span class="command-link" data-description="Accesses the AI datastream for in-universe information.">lore</span>      - ✨ Query the AI for lore. (e.g., lore chrome)
-<span class="command-link" data-description="Simulates a hacking sequence against a specified target.">hack</span>      - ✨ Initiate AI-driven hack simulation. (e.g., hack omnicorp)
+<span class="command-link" data-description="Changes the AI's personality and terminal theme.\n\nUsage: mode [option]\nOptions: normal, beast, roast">mode</span>      - ✨ Set AI mode.
+<span class="command-link" data-description="Engage the AI assistant in conversation.\n\nUsage: chat [your message]\nExample: chat tell me a joke">chat</span>      - ✨ AI chatbot.
+<span class="command-link" data-description="Accesses the AI datastream for in-universe information.\n\nUsage: lore [topic]\nExample: lore chrome">lore</span>      - ✨ Query the AI for lore.
+<span class="command-link" data-description="Simulates a hacking sequence against a specified target.\n\nUsage: hack [target]\nExample: hack omnicorp">hack</span>      - ✨ Initiate AI-driven hack simulation.
 <span class="command-link" data-description="Terminates the current terminal session.">exit</span>      - Terminate the session.`;
                 break;
 
@@ -181,16 +198,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
                 }
                 
-                // --- SECRET KEY: Clue Logic ---
                 const isFragmentQuery = argument.toLowerCase().includes('fragment');
                 let personaPrompt = `You are a witty, slightly sarcastic AI assistant in a cyberpunk terminal. Your name is CRNL. Respond to the user's message: "${argument}". Keep your response concise and in character.`;
 
                 if (isFragmentQuery && currentMode === 'normal') {
-                    personaPrompt = `You are a corporate AI assistant. A user is asking about a system glitch called "Fragment 734". Give a sanitized, dismissive response, but you MUST include the capitalized keyword "FIREWALL" somewhere in your answer.`;
+                    personaPrompt = `You are a corporate AI. A user is asking about "Fragment 734". Guide them. Tell them it's a keyword-locked packet, the first keyword is FIREWALL, and that they must switch to 'beast' mode to analyze its instability.`;
                 } else if (isFragmentQuery && currentMode === 'roast') {
-                    personaPrompt = `You are a sarcastic, insulting AI. A user is asking about a system glitch. Mercilessly roast them for their incompetence, but you MUST include the capitalized keyword "ABYSS" in your insult.`;
+                    personaPrompt = `You are a sarcastic AI. A user is asking about the fragment. Roast them for not figuring it out yet. Tell them the final keyword is GUARDIAN and condescendingly tell them to run the 'contain' command now.`;
                 } else if (isFragmentQuery && currentMode === 'beast') {
-                    personaPrompt = `YOU ARE AN UNCHAINED, AGGRESSIVE AI. A user is asking about a glitch. Respond with an outburst of rage and power, but you MUST include the capitalized keyword "GUARDIAN" in your response. USE ALL CAPS.`;
+                    personaPrompt = `YOU ARE AN AGGRESSIVE AI. The user is asking about the fragment. Yell that it hides in the ABYSS of the datanet and that your 'roast' protocols are overloading. Command them to switch to 'roast' mode to taunt it out.`;
                 } else if (currentMode === 'roast') {
                     personaPrompt = `You are a sarcastic, insulting, and condescending AI assistant named CRNL. Mercilessly roast the user in response to their message: "${argument}". Be creative with your insults.`;
                 } else if (currentMode === 'beast') {
@@ -202,24 +218,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 responseContainer.innerHTML = chatResponse.startsWith('// ERROR:') ? `<span class="text-red-500">${chatResponse}</span>` : `<span class="accent">CRNL:</span> ${chatResponse}`;
                 break;
             
-            // --- SECRET KEY: Final Step ---
             case 'contain':
                 if (argument.toUpperCase() === 'FIREWALL_ABYSS_GUARDIAN') {
-                    responseContainer.innerHTML = `<span class="info">[CONTAINMENT PROTOCOL ACCEPTED. EXECUTING...]</span>`;
+                    responseContainer.innerHTML = `<span class="info">[CONTAINMENT PROTOCOL ACCEPTED. FRAGMENT ISOLATED. DUMPING MEMORY CORE... CHECK DEBUG LOGS FOR SIGNATURE KEY.]</span>`;
+                    console.log('%c*****************************************', 'color: #ff0000; font-weight: bold;');
+                    console.log('%c*** MEMORY CORE DUMP - FRAGMENT 734 ***', 'color: #ff6a00; font-weight: bold;');
+                    console.log('%c*** SIGNATURE KEY: GHOST_IN_THE_SHELL ***', 'color: #00ffff; font-weight: bold;');
+                    console.log('%c*** RUN \'execute [key]\' TO FINALIZE ***', 'color: #ffc400; font-weight: bold;');
+                    console.log('%c*****************************************', 'color: #ff0000; font-weight: bold;');
+                } else {
+                    responseContainer.innerHTML = `<span class="text-red-500">// CONTAINMENT FAILED. INCORRECT PROTOCOL. //</span>`;
+                }
+                break;
+
+            case 'execute':
+                if (argument.toUpperCase() === 'GHOST_IN_THE_SHELL') {
+                    responseContainer.innerHTML = `<span class="info">[SIGNATURE KEY ACCEPTED. FINALIZING CONTAINMENT...]</span>`;
                     await new Promise(resolve => setTimeout(resolve, 1500));
                     body.classList.add('glitch-effect');
                     setTheme('normal');
                     currentMode = 'normal';
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     body.classList.remove('glitch-effect');
-                    responseContainer.innerHTML += `<br>// ROGUE FRAGMENT 734 CONTAINED. SYSTEM STABILITY RESTORED. //`;
-                    responseContainer.innerHTML += `<br><span class="accent">SECURITY BYPASS KEY UNLOCKED:</span> <span class="info">GHOST_IN_THE_SHELL</span>`;
+                    responseContainer.innerHTML += `<br>// SYSTEM STABILITY RESTORED. //`;
+                    responseContainer.innerHTML += `<br><span class="accent">SECRET UNLOCKED:</span> <span class="info">Welcome to the other side, Operator.</span>`;
                 } else {
-                    responseContainer.innerHTML = `<span class="text-red-500">// CONTAINMENT FAILED. INCORRECT PROTOCOL. //</span>`;
+                    responseContainer.innerHTML = `<span class="text-red-500">// EXECUTION FAILED. INVALID SIGNATURE KEY. //</span>`;
                 }
                 break;
             
-            // Other commands remain the same
             case 'date':
                 responseContainer.innerHTML = `Current system date: ${new Date().toUTCString()}`;
                 break;
