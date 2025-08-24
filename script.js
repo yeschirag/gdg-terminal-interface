@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 document.addEventListener('DOMContentLoaded', () => {
     const terminal = document.getElementById('terminal');
     const output = document.getElementById('output');
@@ -5,6 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const utcTimeElement = document.getElementById('utc-time');
     const body = document.body;
     const cursorFollower = document.getElementById('cursor-follower');
+
+    const asciiPopup = document.getElementById('ascii-popup');
+    const asciiContainer = document.getElementById('ascii-container');
+    const closeAsciiButton = document.getElementById('close-ascii');
+    let activeAsciiEffect = null;
 
     let currentMode = 'normal'; // Modes: normal, beast, roast
     let commandCounter = 0;
@@ -61,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cursorFollower.style.opacity = '0';
         });
     }
+
 
 
     // --- Permanent Matrix Background ---
@@ -179,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Gemini API Helper ---
     async function callGemini(prompt, isJson = false) {
-        const apiKey = "";
+        const apiKey = "AIzaSyA29tZWVdrXydY5NGz3VZ3wYffzZg2eyNk";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
         const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
         if (isJson) {
@@ -227,11 +234,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 responseContainer.innerHTML = `
 <span class="command-link" data-description="Shows this list of available commands.">help</span>      - System command reference.
 <span class="command-link" data-description="Clears all text from the terminal screen.">clear</span>     - Clear the display buffer.
-<span class="command-link" data-description="Changes the AI's personality and terminal theme.\n\nUsage: mode [option]\nOptions: normal, beast, roast">mode</span>      - ✨ Set AI mode.
-<span class="command-link" data-description="Tells about me.">clear</span>     - Information about the 
-<span class="command-link" data-description="Engage the AI assistant in conversation.\n\nUsage: chat [your message]\nExample: chat tell me a joke">chat</span>      - ✨ AI chatbot.
-<span class="command-link" data-description="Accesses the AI datastream for in-universe information.\n\nUsage: lore [topic]\nExample: lore chrome">lore</span>      - ✨ Query the AI for lore.
-<span class="command-link" data-description="Simulates a hacking sequence against a specified target.\n\nUsage: hack [target]\nExample: hack omnicorp">hack</span>      - ✨ Initiate AI-driven hack simulation.
+<span class="command-link" data-description="Changes the AI's personality and terminal theme.\n\nUsage: mode [option]\nOptions: normal, beast, roast">mode</span>      - Set AI mode.
+<span class="command-link" data-description="Tells about me.">whomai</span>    - Information about the owner of this terminal.
+<span class="command-link" data-description="Renders your text as a 3D ASCII art piece.\n\nUsage: asciify [text]\nExample: asciify chirag">asciify</span>   - Generate 3D ASCII art.
+<span class="command-link" data-description="Engage the AI assistant in conversation.\n\nUsage: chat [your message]\nExample: chat tell me a joke">chat</span>      - AI chatbot.
+<span class="command-link" data-description="Accesses the AI datastream for in-universe information.\n\nUsage: lore [topic]\nExample: lore chrome">lore</span>      - Query the AI for lore.
+<span class="command-link" data-description="Simulates a hacking sequence against a specified target.\n\nUsage: hack [target]\nExample: hack omnicorp">hack</span>      - Initiate AI-driven hack simulation.
 <span class="command-link" data-description="Terminates the current terminal session.">exit</span>      - Terminate the session.`;
                 break;
 
@@ -239,6 +247,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 output.innerHTML = '';
                 showWelcomeMessage();
                 return;
+
+            case 'asciify':
+                if (!argument) {
+                    responseContainer.innerHTML = `Usage: asciify [text]. Example: <span class="info">asciify hello</span>`;
+                    break;
+                }
+                responseContainer.innerHTML = `<span class="info">[Rendering 3D ASCII for: ${argument}]</span>`;
+                startAsciiEffect(argument);
+                break;
+
 
             case 'mode':
                 const newMode = argument.toLowerCase();
@@ -364,9 +382,34 @@ BRANCH: <span class="accent">CSE</span>`;
                 break;
         }
     }
+
+    const vertexShader=`varying vec2 vUv;uniform float uTime;uniform float uEnableWaves;void main(){vUv=uv;float time=uTime*5.;float waveFactor=uEnableWaves;vec3 transformed=position;transformed.x+=sin(time+position.y)*.5*waveFactor;transformed.y+=cos(time+position.z)*.15*waveFactor;transformed.z+=sin(time+position.x)*waveFactor;gl_Position=projectionMatrix*modelViewMatrix*vec4(transformed,1.);}`;
+    const fragmentShader=`varying vec2 vUv;uniform float uTime;uniform sampler2D uTexture;void main(){float time=uTime;vec2 pos=vUv;float r=texture2D(uTexture,pos+cos(time*2.-time+pos.x)*.01).r;float g=texture2D(uTexture,pos+tan(time*.5+pos.x-time)*.01).g;float b=texture2D(uTexture,pos-cos(time*2.+time+pos.y)*.01).b;float a=texture2D(uTexture,pos).a;gl_FragColor=vec4(r,g,b,a);}`;
+    Math.map = (n, start, stop, start2, stop2) => ((n - start) / (stop - start)) * (stop2 - start2) + start2;
+    class AsciiFilter{constructor(renderer,{fontSize,fontFamily,charset,invert}={}){this.renderer=renderer;this.domElement=document.createElement("div");Object.assign(this.domElement.style,{position:"absolute",top:"0",left:"0",width:"100%",height:"100%"});this.pre=document.createElement("pre");this.domElement.appendChild(this.pre);this.canvas=document.createElement("canvas");this.context=this.canvas.getContext("2d");this.domElement.appendChild(this.canvas);this.invert=invert??!0;this.fontSize=fontSize??12;this.fontFamily=fontFamily??"'Courier New', monospace";this.charset=charset??" .'`^\\\",:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";this.context.imageSmoothingEnabled=!1;this.onMouseMove=this.onMouseMove.bind(this);document.addEventListener("mousemove",this.onMouseMove)}setSize(width,height){this.width=width;this.height=height;this.renderer.setSize(width,height);this.context.font=`${this.fontSize}px ${this.fontFamily}`;const charWidth=this.context.measureText("A").width;this.cols=Math.floor(this.width/(this.fontSize*(charWidth/this.fontSize)));this.rows=Math.floor(this.height/this.fontSize);this.canvas.width=this.cols;this.canvas.height=this.rows;this.pre.style.fontFamily=this.fontFamily;this.pre.style.fontSize=`${this.fontSize}px`;this.center={x:width/2,y:height/2};this.mouse={x:this.center.x,y:this.center.y}}render(scene,camera){this.renderer.render(scene,camera);const{width:w,height:h}=this.canvas;this.context.clearRect(0,0,w,h);if(this.context&&w&&h)this.context.drawImage(this.renderer.domElement,0,0,w,h);this.asciify(this.context,w,h);this.hue()}onMouseMove(e){this.mouse={x:e.clientX,y:e.clientY}}get dx(){return this.mouse.x-this.center.x}get dy(){return this.mouse.y-this.center.y}hue(){const deg=180*Math.atan2(this.dy,this.dx)/Math.PI;this.deg=(this.deg||0)+(.075*(deg-(this.deg||0)));this.domElement.style.filter=`hue-rotate(${this.deg.toFixed(1)}deg)`}asciify(ctx,w,h){if(!w||!h)return;const imgData=ctx.getImageData(0,0,w,h).data;let str="";for(let y=0;y<h;y++){for(let x=0;x<w;x++){const i=4*(x+y*w),[r,g,b,a]=[imgData[i],imgData[i+1],imgData[i+2],imgData[i+3]];if(0===a){str+=" ";continue}const gray=(.3*r+.6*g+.1*b)/255;let idx=Math.floor((this.invert?gray:1-gray)*(this.charset.length-1));str+=this.charset[idx]}str+="\n"}this.pre.innerHTML=str}}
+    class CanvasTxt{constructor(){this.canvas=document.createElement("canvas");this.context=this.canvas.getContext("2d")}draw(txt,{fontSize:fontSize=200,fontFamily:fontFamily="Arial",color:color="#fdf9f3"}={}){this.font=`600 ${fontSize}px ${fontFamily}`;this.context.font=this.font;const metrics=this.context.measureText(txt);this.canvas.width=Math.ceil(metrics.width)+20;this.canvas.height=Math.ceil(metrics.actualBoundingBoxAscent+metrics.actualBoundingBoxDescent)+20;this.context.font=this.font;this.context.fillStyle=color;this.context.fillText(txt,10,10+metrics.actualBoundingBoxAscent);return this.canvas}}
+    class CanvAscii{constructor(settings,containerElem){this.settings=settings;this.container=containerElem;const{width:width,height:height}=containerElem.getBoundingClientRect();this.width=width;this.height=height;this.camera=new THREE.PerspectiveCamera(45,width/height,1,1e3);this.camera.position.z=30;this.scene=new THREE.Scene;this.mouse={x:0,y:0};this.onMouseMove=this.onMouseMove.bind(this);this.textCanvas=new CanvasTxt;this.setMesh();this.setRenderer()}setMesh(){const{text:text,textFontSize:textFontSize,textColor:textColor,planeBaseHeight:planeBaseHeight,enableWaves:enableWaves}=this.settings,textureCanvas=this.textCanvas.draw(text,{fontSize:textFontSize,fontFamily:"IBM Plex Mono",color:textColor});this.texture=new THREE.CanvasTexture(textureCanvas),this.texture.minFilter=THREE.NearestFilter;const textAspect=textureCanvas.width/textureCanvas.height,planeH=planeBaseHeight,planeW=planeH*textAspect;this.geometry=new THREE.PlaneGeometry(planeW,planeH,36,36),this.material=new THREE.ShaderMaterial({vertexShader:vertexShader,fragmentShader:fragmentShader,transparent:!0,uniforms:{uTime:{value:0},uTexture:{value:this.texture},uEnableWaves:{value:enableWaves?1:0}}}),this.mesh=new THREE.Mesh(this.geometry,this.material),this.scene.add(this.mesh)}setRenderer(){this.renderer=new THREE.WebGLRenderer({antialias:!1,alpha:!0}),this.renderer.setPixelRatio(1),this.renderer.setClearColor(0,0),this.filter=new AsciiFilter(this.renderer,{fontFamily:"IBM Plex Mono",fontSize:this.settings.asciiFontSize}),this.container.appendChild(this.filter.domElement),this.setSize(this.width,this.height),this.container.addEventListener("mousemove",this.onMouseMove)}updateText(newText){this.settings.text=newText;this.scene.remove(this.mesh);this.mesh.geometry.dispose();this.mesh.material.uniforms.uTexture.value.dispose();this.mesh.material.dispose();this.setMesh()}setSize(w,h){this.width=w;this.height=h;this.camera.aspect=w/h;this.camera.updateProjectionMatrix(),this.filter.setSize(w,h),this.center={x:w/2,y:h/2}}load(){this.animate()}onMouseMove(evt){const e=evt.touches?evt.touches[0]:evt,bounds=this.container.getBoundingClientRect();this.mouse={x:e.clientX-bounds.left,y:e.clientY-bounds.top}}animate(){this.animationFrameId=requestAnimationFrame(this.animate.bind(this));this.render()}render(){const time=.001*Date.now();this.texture.needsUpdate=!0,this.mesh.material.uniforms.uTime.value=Math.sin(time);const x=Math.map(this.mouse.y,0,this.height,.5,-.5),y=Math.map(this.mouse.x,0,this.width,-.5,.5);this.mesh.rotation.x+=(x-this.mesh.rotation.x)*.05,this.mesh.rotation.y+=(y-this.mesh.rotation.y)*.05,this.filter.render(this.scene,this.camera)}dispose(){cancelAnimationFrame(this.animationFrameId);this.container.removeEventListener("mousemove",this.onMouseMove);this.filter.dispose();this.scene.remove(this.mesh);this.mesh.geometry.dispose();this.mesh.material.uniforms.uTexture.value.dispose();this.mesh.material.dispose();while(this.container.firstChild){this.container.removeChild(this.container.firstChild)}}}
+    
+    function startAsciiEffect(text) {
+        if (activeAsciiEffect) {
+            activeAsciiEffect.dispose();
+        }
+        const settings = { text, asciiFontSize: 8, textFontSize: 200, textColor: '#fdf9f3', planeBaseHeight: 8, enableWaves: true };
+        asciiPopup.style.display = 'flex';
+        activeAsciiEffect = new CanvAscii(settings, asciiContainer);
+        activeAsciiEffect.load();
+    }
+
+    closeAsciiButton.addEventListener('click', () => {
+        asciiPopup.style.display = 'none';
+        if (activeAsciiEffect) {
+            activeAsciiEffect.dispose();
+            activeAsciiEffect = null;
+        }
+    });
 });
 
-const cursorFollower = document.getElementById('cursor-follower');
+     const cursorFollower = document.getElementById('cursor-follower');
 
         // Target positions for the cursor
         let mouseX = 0;
@@ -408,7 +451,7 @@ const cursorFollower = document.getElementById('cursor-follower');
             
             // Calculate the scale based on speed. It will stretch up to 1.5x
             // The clamp function ensures the scale doesn't go below 1 or above 1.5
-            const targetScale = Math.min(Math.max(1 + speed * 0.05, 1), 1.5);
+            const targetScale = Math.min(Math.max(1 + speed * 0.25, 1), 1.5);
             scale += (targetScale - scale) * easing; // Ease the scaling effect
 
             // Update the previous positions for the next frame
@@ -441,4 +484,238 @@ const cursorFollower = document.getElementById('cursor-follower');
         // Hide the cursor when the mouse leaves the window
         window.addEventListener('mouseout', () => {
             cursorFollower.style.opacity = '0';
+});
+
+        
+        const vertexShader = `
+            varying vec2 vUv; uniform float uTime; uniform float uEnableWaves;
+            void main() {
+                vUv = uv; float time = uTime * 5.; float waveFactor = uEnableWaves;
+                vec3 transformed = position;
+                transformed.x += sin(time + position.y) * 0.5 * waveFactor;
+                transformed.y += cos(time + position.z) * 0.15 * waveFactor;
+                transformed.z += sin(time + position.x) * waveFactor;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+            }
+        `;
+        const fragmentShader = `
+            varying vec2 vUv; uniform float uTime; uniform sampler2D uTexture;
+            void main() {
+                float time = uTime; vec2 pos = vUv;
+                float r = texture2D(uTexture, pos + cos(time * 2. - time + pos.x) * .01).r;
+                float g = texture2D(uTexture, pos + tan(time * .5 + pos.x - time) * .01).g;
+                float b = texture2D(uTexture, pos - cos(time * 2. + time + pos.y) * .01).b;
+                float a = texture2D(uTexture, pos).a;
+                gl_FragColor = vec4(r, g, b, a);
+            }
+        `;
+        
+        Math.map = (n, start, stop, start2, stop2) => ((n - start) / (stop - start)) * (stop2 - start2) + start2;
+
+        class AsciiFilter {
+            constructor(renderer, { fontSize, fontFamily, charset, invert } = {}) {
+                this.renderer = renderer;
+                this.domElement = document.createElement('div');
+                Object.assign(this.domElement.style, { position: 'absolute', top: '0', left: '0', width: '100%', height: '100%' });
+                this.pre = document.createElement('pre');
+                this.domElement.appendChild(this.pre);
+                this.canvas = document.createElement('canvas');
+                this.context = this.canvas.getContext('2d');
+                this.domElement.appendChild(this.canvas);
+                this.invert = invert ?? true;
+                this.fontSize = fontSize ?? 12;
+                this.fontFamily = fontFamily ?? "'Courier New', monospace";
+                this.charset = charset ?? " .'`^\",:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+                this.context.imageSmoothingEnabled = false;
+                this.onMouseMove = this.onMouseMove.bind(this);
+                document.addEventListener('mousemove', this.onMouseMove);
+            }
+            setSize(width, height) {
+                this.width = width; this.height = height;
+                this.renderer.setSize(width, height);
+                this.context.font = `${this.fontSize}px ${this.fontFamily}`;
+                const charWidth = this.context.measureText('A').width;
+                this.cols = Math.floor(this.width / (this.fontSize * (charWidth / this.fontSize)));
+                this.rows = Math.floor(this.height / this.fontSize);
+                this.canvas.width = this.cols; this.canvas.height = this.rows;
+                this.pre.style.fontFamily = this.fontFamily; this.pre.style.fontSize = `${this.fontSize}px`;
+                this.center = { x: width / 2, y: height / 2 }; this.mouse = { x: this.center.x, y: this.center.y };
+            }
+            render(scene, camera) {
+                this.renderer.render(scene, camera);
+                const { width: w, height: h } = this.canvas;
+                this.context.clearRect(0, 0, w, h);
+                if (this.context && w && h) this.context.drawImage(this.renderer.domElement, 0, 0, w, h);
+                this.asciify(this.context, w, h);
+                this.hue();
+            }
+            onMouseMove(e) { this.mouse = { x: e.clientX, y: e.clientY }; }
+            get dx() { return this.mouse.x - this.center.x; }
+            get dy() { return this.mouse.y - this.center.y; }
+            hue() {
+                const deg = (Math.atan2(this.dy, this.dx) * 180) / Math.PI;
+                this.deg = (this.deg || 0) + (deg - (this.deg || 0)) * 0.075;
+                this.domElement.style.filter = `hue-rotate(${this.deg.toFixed(1)}deg)`;
+            }
+            asciify(ctx, w, h) {
+                if (!w || !h) return;
+                const imgData = ctx.getImageData(0, 0, w, h).data;
+                let str = '';
+                for (let y = 0; y < h; y++) {
+                    for (let x = 0; x < w; x++) {
+                        const i = (x + y * w) * 4;
+                        const [r, g, b, a] = [imgData[i], imgData[i + 1], imgData[i + 2], imgData[i + 3]];
+                        if (a === 0) { str += ' '; continue; }
+                        const gray = (0.3 * r + 0.6 * g + 0.1 * b) / 255;
+                        let idx = Math.floor((this.invert ? gray : 1 - gray) * (this.charset.length - 1));
+                        str += this.charset[idx];
+                    }
+                    str += '\n';
+                }
+                this.pre.innerHTML = str;
+            }
+        }
+
+        class CanvasTxt {
+            constructor() {
+                this.canvas = document.createElement('canvas');
+                this.context = this.canvas.getContext('2d');
+            }
+            draw(txt, { fontSize = 200, fontFamily = 'Arial', color = '#fdf9f3' } = {}) {
+                this.font = `600 ${fontSize}px ${fontFamily}`;
+                this.context.font = this.font;
+                const metrics = this.context.measureText(txt);
+                this.canvas.width = Math.ceil(metrics.width) + 20;
+                this.canvas.height = Math.ceil(metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) + 20;
+                this.context.font = this.font; // Font needs to be reset after canvas resize
+                this.context.fillStyle = color;
+                this.context.fillText(txt, 10, 10 + metrics.actualBoundingBoxAscent);
+                return this.canvas;
+            }
+        }
+
+        class CanvAscii {
+            constructor(settings, containerElem) {
+                this.settings = settings;
+                this.container = containerElem;
+                const { width, height } = containerElem.getBoundingClientRect();
+                this.width = width; this.height = height;
+
+                this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
+                this.camera.position.z = 30;
+                this.scene = new THREE.Scene();
+                this.mouse = { x: 0, y: 0 };
+                this.onMouseMove = this.onMouseMove.bind(this);
+                this.textCanvas = new CanvasTxt();
+                
+                this.setMesh();
+                this.setRenderer();
+            }
+
+            setMesh() {
+                const { text, textFontSize, textColor, planeBaseHeight, enableWaves } = this.settings;
+                
+                const textureCanvas = this.textCanvas.draw(text, { fontSize: textFontSize, fontFamily: 'IBM Plex Mono', color: textColor });
+                this.texture = new THREE.CanvasTexture(textureCanvas);
+                this.texture.minFilter = THREE.NearestFilter;
+                
+                const textAspect = textureCanvas.width / textureCanvas.height;
+                const planeH = planeBaseHeight;
+                const planeW = planeH * textAspect;
+                
+                this.geometry = new THREE.PlaneGeometry(planeW, planeH, 36, 36);
+                this.material = new THREE.ShaderMaterial({
+                    vertexShader, fragmentShader, transparent: true,
+                    uniforms: {
+                        uTime: { value: 0 }, uTexture: { value: this.texture }, uEnableWaves: { value: enableWaves ? 1.0 : 0.0 }
+                    },
+                });
+                this.mesh = new THREE.Mesh(this.geometry, this.material);
+                this.scene.add(this.mesh);
+            }
+
+            setRenderer() {
+                this.renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+                this.renderer.setPixelRatio(1);
+                this.renderer.setClearColor(0x000000, 0);
+                this.filter = new AsciiFilter(this.renderer, { fontFamily: 'IBM Plex Mono', fontSize: this.settings.asciiFontSize });
+                this.container.appendChild(this.filter.domElement);
+                this.setSize(this.width, this.height);
+                this.container.addEventListener('mousemove', this.onMouseMove);
+            }
+            
+            // --- NEW METHOD TO UPDATE TEXT ---
+            updateText(newText) {
+                // Update the text in our settings
+                this.settings.text = newText;
+
+                // Clean up the old 3D object to prevent memory leaks
+                this.scene.remove(this.mesh);
+                this.mesh.geometry.dispose();
+                this.mesh.material.uniforms.uTexture.value.dispose();
+                this.mesh.material.dispose();
+                
+                // Create a new mesh with the updated text
+                this.setMesh();
+            }
+
+            setSize(w, h) {
+                this.width = w; this.height = h;
+                this.camera.aspect = w / h;
+                this.camera.updateProjectionMatrix();
+                this.filter.setSize(w, h);
+                this.center = { x: w / 2, y: h / 2 };
+            }
+            
+            load() { this.animate(); }
+            onMouseMove(evt) {
+                const e = evt.touches ? evt.touches[0] : evt;
+                const bounds = this.container.getBoundingClientRect();
+                this.mouse = { x: e.clientX - bounds.left, y: e.clientY - bounds.top };
+            }
+            animate() {
+                requestAnimationFrame(this.animate.bind(this));
+                this.render();
+            }
+            render() {
+                const time = Date.now() * 0.001;
+                this.texture.needsUpdate = true;
+                this.mesh.material.uniforms.uTime.value = Math.sin(time);
+                
+                const x = Math.map(this.mouse.y, 0, this.height, 0.5, -0.5);
+                const y = Math.map(this.mouse.x, 0, this.width, -0.5, 0.5);
+                this.mesh.rotation.x += (x - this.mesh.rotation.x) * 0.05;
+                this.mesh.rotation.y += (y - this.mesh.rotation.y) * 0.05;
+                
+                this.filter.render(this.scene, this.camera);
+            }
+        }
+
+        // --- INITIALIZATION SCRIPT ---
+        const settings = {
+            text: 'Hello World!',
+            asciiFontSize: 8,
+            textFontSize: 200,
+            textColor: '#fdf9f3',
+            planeBaseHeight: 8,
+            enableWaves: true
+        };
+
+        const container = document.getElementById('ascii-container');
+        const asciiEffect = new CanvAscii(settings, container);
+        asciiEffect.load();
+        
+        // --- EVENT LISTENERS FOR UI ---
+        const textInput = document.getElementById('text-input');
+        const updateButton = document.getElementById('update-button');
+
+        updateButton.addEventListener('click', () => {
+            if (textInput.value) {
+                asciiEffect.updateText(textInput.value);
+            }
+        });
+        
+        window.addEventListener('resize', () => {
+            const { width, height } = container.getBoundingClientRect();
+            asciiEffect.setSize(width, height);
         });

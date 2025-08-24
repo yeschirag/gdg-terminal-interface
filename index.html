@@ -12,6 +12,7 @@
 <body>
     <canvas id="matrix-bg"></canvas>
 
+
     <div id="cursor-follower">
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="33" viewBox="0 0 50 54" fill="none">
             <g filter="url(#filter0_d_91_7928)">
@@ -46,6 +47,14 @@
             <span id="footer-right">UTC: <span id="utc-time"></span></span>
         </footer>
     </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.167.0/build/three.module.js"
+            }
+        }
+    </script>
 
     <script type="module" src="script.js"></script>
 </body>
