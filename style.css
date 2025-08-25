@@ -14,12 +14,9 @@
 /* --- Beast Mode Theme --- */
 .theme-beast {
     --background: #1a0202;
-    --primary: #ff0000;
-    /* Intense Red */
-    --secondary: #ff6a00;
-    /* Orange */
-    --accent: #ffc400;
-    /* Yellow */
+    --primary: #ff0000; /* Intense Red */
+    --secondary: #ff6a00; /* Orange */
+    --accent: #ffc400; /* Yellow */
     --text: #ffdddd;
     --glow: 0 0 4px var(--primary), 0 0 7px var(--primary);
 }
@@ -48,6 +45,16 @@ body {
     transition: background-color 0.5s ease;
     cursor: none;
 }
+
+@keyframes screen-shake {
+    0%, 100% { transform: translate(0, 0); }
+    10%, 30%, 50%, 70%, 90% { transform: translate(-1px, 1px); }
+    20%, 40%, 60%, 80% { transform: translate(1px, -1px); }
+}
+.theme-beast .crt-container {
+    animation: screen-shake 0.3s infinite;
+}
+
 
 #cursor-follower {
     position: fixed;
@@ -96,6 +103,59 @@ body {
     transition: opacity 1s ease-out;
 }
 
+#ascii-popup {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    height: 80vh;
+    background-color: rgba(10, 4, 24, 0.9);
+    border: 1px solid var(--primary);
+    box-shadow: var(--glow);
+    z-index: 1000;
+    flex-direction: column;
+    border-radius: 8px;
+}
+#ascii-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 15px;
+    background: linear-gradient(90deg, rgba(158, 0, 255, 0.2), rgba(0, 255, 255, 0.2));
+    border-bottom: 1px solid var(--primary);
+    border-radius: 8px 8px 0 0;
+}
+#ascii-container {
+    flex-grow: 1;
+    position: relative;
+    overflow: hidden;
+    /* --- ADD THESE LINES --- */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#ascii-container pre {
+    margin: 0;
+    user-select: none;
+    padding: 1rem; /* Added some padding for spacing */
+    line-height: 1em;
+    text-align: center; /* Changed from left to center */
+    /* position: absolute; --- REMOVED --- */
+    /* left: 0; --- REMOVED --- */
+    /* top: 0; --- REMOVED --- */
+    background-image: radial-gradient(circle, #ff6188 0%, #fc9867 50%, #ffd866 100%);
+    background-attachment: fixed;
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    z-index: 9;
+    mix-blend-mode: difference;
+}
+#exit-message {
+    font-size: 0.8rem;
+    color: var(--accent);
+}
 
 /* --- Permanent Matrix Background --- */
 #matrix-bg {
