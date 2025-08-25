@@ -136,6 +136,7 @@ body {
     justify-content: center;
     align-items: center;
 }
+
 #ascii-container pre {
     margin: 0;
     user-select: none;
