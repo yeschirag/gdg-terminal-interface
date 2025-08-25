@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Terminal</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <canvas id="matrix-bg"></canvas>
 
 
     <div id="cursor-follower">
+<<<<<<< HEAD
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="33" viewBox="0 0 50 54" fill="none">
             <g filter="url(#filter0_d_91_7928)">
                 <path d="M42.6817 41.1495L27.5103 6.79925C26.7269 5.02557 24.2082 5.02558 23.3927 6.79925L7.59814 41.1495C6.75833 42.9759 8.52712 44.8902 10.4125 44.1954L24.3757 39.0496C24.8829 38.8627 25.4385 38.8627 25.9422 39.0496L39.8121 44.1954C41.6849 44.8902 43.4884 42.9759 42.6817 41.1495Z" fill="white"></path>
@@ -25,29 +29,88 @@
                 </filter>
             </defs>
         </svg>
+=======
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="30"
+        height="33"
+        viewBox="0 0 50 54"
+        fill="none"
+      >
+        <g filter="url(#filter0_d_91_7928)">
+          <path
+            d="M42.6817 41.1495L27.5103 6.79925C26.7269 5.02557 24.2082 5.02558 23.3927 6.79925L7.59814 41.1495C6.75833 42.9759 8.52712 44.8902 10.4125 44.1954L24.3757 39.0496C24.8829 38.8627 25.4385 38.8627 25.9422 39.0496L39.8121 44.1954C41.6849 44.8902 43.4884 42.9759 42.6817 41.1495Z"
+            fill="white"
+          ></path>
+          <path
+            d="M43.7146 40.6933L28.5431 6.34306C27.3556 3.65428 23.5772 3.69516 22.3668 6.32755L6.57226 40.6778C5.3134 43.4156 7.97238 46.298 10.803 45.2549L24.7662 40.109C25.0221 40.0147 25.2999 40.0156 25.5494 40.1082L39.4193 45.254C42.2261 46.2953 44.9254 43.4347 43.7146 40.6933Z"
+            stroke="black"
+            stroke-width="2.25825"
+          ></path>
+        </g>
+        <defs>
+          <filter
+            id="filter0_d_91_7928"
+            x="0.602397"
+            y="0.952444"
+            width="49.0584"
+            height="52.428"
+            filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB"
+          >
+            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            ></feColorMatrix>
+            <feOffset dy="2.25825"></feOffset>
+            <feGaussianBlur stdDeviation="2.25825"></feGaussianBlur>
+            <feComposite in2="hardAlpha" operator="out"></feComposite>
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0"
+            ></feColorMatrix>
+            <feBlend
+              mode="normal"
+              in2="BackgroundImageFix"
+              result="effect1_dropShadow_91_7928"
+            ></feBlend>
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="effect1_dropShadow_91_7928"
+              result="shape"
+            ></feBlend>
+          </filter>
+        </defs>
+      </svg>
+>>>>>>> ascii-art
     </div>
 
     <div class="crt-container">
-        <header id="terminal-header">
-            <span>TERMINAL :: SYS.INTERFACE</span>
-            <span id="system-status">STATUS: SECURE</span>
-        </header>
+      <header id="terminal-header">
+        <span>TERMINAL :: SYS.INTERFACE</span>
+        <span id="system-status">STATUS: SECURE</span>
+      </header>
 
-        <div id="terminal">
-            <div id="output"></div>
-            <div id="input-line">
-                <span id="prompt">&gt; USER:</span>
-                <input type="text" id="userInput" autocomplete="off" autofocus>
-                <span class="cursor"></span>
-            </div>
+      <div id="terminal">
+        <div id="output"></div>
+        <div id="input-line">
+          <span id="prompt">&gt; USER:</span>
+          <input type="text" id="userInput" autocomplete="off" autofocus />
+          <span class="cursor"></span>
         </div>
+      </div>
 
-        <footer id="terminal-footer">
-            <span id="footer-left">Operator_7</span>
-            <span id="footer-right">UTC: <span id="utc-time"></span></span>
-        </footer>
+      <footer id="terminal-footer">
+        <span id="footer-left">Operator</span>
+        <span id="footer-right">UTC: <span id="utc-time"></span></span>
+      </footer>
     </div>
 
+<<<<<<< HEAD
     <script type="importmap">
         {
             "imports": {
@@ -59,3 +122,29 @@
     <script type="module" src="script.js"></script>
 </body>
 </html>
+=======
+    <div id="ascii-popup">
+      <div id="ascii-header">
+        <span>ASCII RENDER</span>
+        <span id="exit-message">Press ESC to exit</span>
+        <button id="close-ascii">X</button>
+      </div>
+
+      <!-- Make this a PRE directly -->
+      <div id="ascii-container"></div>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.167.0/build/three.module.js"
+        }
+      }
+    </script>
+
+    <script type="module" src="ascii.js"></script>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
+>>>>>>> ascii-art

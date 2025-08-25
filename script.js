@@ -1,4 +1,9 @@
 import * as THREE from 'three';
+<<<<<<< HEAD
+=======
+import { CanvAscii } from './ascii.js'; // Import the new class
+
+>>>>>>> ascii-art
 document.addEventListener('DOMContentLoaded', () => {
     const terminal = document.getElementById('terminal');
     const output = document.getElementById('output');
@@ -9,10 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const asciiPopup = document.getElementById('ascii-popup');
     const asciiContainer = document.getElementById('ascii-container');
+<<<<<<< HEAD
     const closeAsciiButton = document.getElementById('close-ascii');
     let activeAsciiEffect = null;
 
     let currentMode = 'normal'; // Modes: normal, beast, roast
+=======
+    let activeAsciiEffect = null;
+
+    let currentMode = 'normal';
+>>>>>>> ascii-art
     let commandCounter = 0;
     let glitchTriggered = false;
     let commandHistory = [];
@@ -27,8 +38,16 @@ document.addEventListener('DOMContentLoaded', () => {
         { keys: { key1: 'PROTOCOL', key2: 'ECHO', key3: 'WARDEN' }, finalKey: 'DATA_HAVEN' }
     ];
 
-    // --- Custom Cursor Follower ---
+    let secretKeywords = {};
+    let finalKey = '';
+    const keywordSets = [
+        { keys: { key1: 'FIREWALL', key2: 'ABYSS', key3: 'GUARDIAN' }, finalKey: 'GHOST_IN_THE_SHELL' },
+        { keys: { key1: 'ENCRYPTION', key2: 'VOID', key3: 'SENTINEL' }, finalKey: 'NEURAL_INTERFACE' },
+        { keys: { key1: 'PROTOCOL', key2: 'ECHO', key3: 'WARDEN' }, finalKey: 'DATA_HAVEN' }
+    ];
+
     if (cursorFollower) {
+<<<<<<< HEAD
         let mouseX = 0;
         let mouseY = 0;
         let followerX = 0;
@@ -39,15 +58,24 @@ document.addEventListener('DOMContentLoaded', () => {
         let angle = 0;
         let scale = 1;
 
+=======
+        let mouseX = 0, mouseY = 0, followerX = 0, followerY = 0, prevFollowerX = 0, prevFollowerY = 0;
+        const easing = 0.1;
+        let angle = 0, scale = 1;
+>>>>>>> ascii-art
         function animateCursor() {
             followerX += (mouseX - followerX) * easing;
             followerY += (mouseY - followerY) * easing;
             const dx = followerX - prevFollowerX;
             const dy = followerY - prevFollowerY;
             const speed = Math.sqrt(dx * dx + dy * dy);
+<<<<<<< HEAD
             if (speed > 0.1) {
               angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
             }
+=======
+            if (speed > 0.1) angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+>>>>>>> ascii-art
             const targetScale = Math.min(Math.max(1 + speed * 0.05, 1), 1.5);
             scale += (targetScale - scale) * easing;
             prevFollowerX = followerX;
@@ -56,18 +84,25 @@ document.addEventListener('DOMContentLoaded', () => {
             requestAnimationFrame(animateCursor);
         }
         animateCursor();
+<<<<<<< HEAD
 
+=======
+>>>>>>> ascii-art
         window.addEventListener('mousemove', (event) => {
             mouseX = event.clientX;
             mouseY = event.clientY;
             cursorFollower.style.opacity = '1';
         });
+<<<<<<< HEAD
         
+=======
+>>>>>>> ascii-art
         window.addEventListener('mouseout', () => {
             cursorFollower.style.opacity = '0';
         });
     }
 
+<<<<<<< HEAD
 
 
     // --- Permanent Matrix Background ---
@@ -75,25 +110,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+=======
+    const matrixCanvas = document.getElementById('matrix-bg');
+    const matrixCtx = matrixCanvas.getContext('2d');
+    matrixCanvas.width = window.innerWidth;
+    matrixCanvas.height = window.innerHeight;
+>>>>>>> ascii-art
     const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
     const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const nums = '0123456789';
     const alphabet = katakana + latin + nums;
     const fontSize = 16;
-    const columns = canvas.width / fontSize;
+    const columns = matrixCanvas.width / fontSize;
     const rainDrops = [];
     for (let x = 0; x < columns; x++) {
         rainDrops[x] = 1;
     }
     const drawMatrix = () => {
-        ctx.fillStyle = 'rgba(10, 4, 24, 0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = getComputedStyle(body).getPropertyValue('--primary').trim() || '#00ffff';
-        ctx.font = fontSize + 'px monospace';
+        matrixCtx.fillStyle = 'rgba(10, 4, 24, 0.05)';
+        matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+        matrixCtx.fillStyle = getComputedStyle(body).getPropertyValue('--primary').trim() || '#00ffff';
+        matrixCtx.font = fontSize + 'px monospace';
         for (let i = 0; i < rainDrops.length; i++) {
             const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-            ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
-            if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            matrixCtx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+            if (rainDrops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
                 rainDrops[i] = 0;
             }
             rainDrops[i]++;
@@ -101,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     setInterval(drawMatrix, 30);
 
-    // --- Welcome Message & Utilities ---
     function showWelcomeMessage() {
         const welcome = document.createElement('div');
         welcome.classList.add('command-output');
@@ -115,20 +155,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Theme Switching ---
     function setTheme(theme) {
         body.className = `theme-${theme}`;
     }
 
-    // --- SECRET KEY: Glitch Trigger ---
     function triggerGlitch() {
         glitchTriggered = true;
+<<<<<<< HEAD
         
         // Randomly select a keyword set for this session
         const chosenSet = keywordSets[Math.floor(Math.random() * keywordSets.length)];
         secretKeywords = chosenSet.keys;
         finalKey = chosenSet.finalKey;
 
+=======
+        const chosenSet = keywordSets[Math.floor(Math.random() * keywordSets.length)];
+        secretKeywords = chosenSet.keys;
+        finalKey = chosenSet.finalKey;
+>>>>>>> ascii-art
         const glitchBox = document.createElement('div');
         glitchBox.className = 'command-output glitch-message';
         glitchBox.innerHTML = `// FRAGMENT_734 DETECTED... CORE LOGIC COMPROMISED... THEY'RE LISTENING... //`;
@@ -140,14 +184,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
 
-    // --- Initial Setup ---
     showWelcomeMessage();
     updateTime();
     setInterval(updateTime, 1000);
     userInput.focus();
     terminal.addEventListener('click', () => userInput.focus());
 
-    // --- Command Handling ---
     userInput.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
             const fullCommand = userInput.value.trim();
@@ -184,7 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Gemini API Helper ---
     async function callGemini(prompt, isJson = false) {
         const apiKey = "AIzaSyA29tZWVdrXydY5NGz3VZ3wYffzZg2eyNk";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
@@ -220,12 +261,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return `// ERROR: AI datastream unreachable. //`;
     }
 
-    // --- Command Processing ---
     async function processCommand(fullCommand) {
         const responseContainer = document.createElement('div');
         responseContainer.classList.add('command-output');
         output.appendChild(responseContainer);
-        
+
         const command = fullCommand.split(' ')[0].toLowerCase();
         const argument = fullCommand.substring(command.length).trim();
 
@@ -234,12 +274,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 responseContainer.innerHTML = `
 <span class="command-link" data-description="Shows this list of available commands.">help</span>      - System command reference.
 <span class="command-link" data-description="Clears all text from the terminal screen.">clear</span>     - Clear the display buffer.
+<<<<<<< HEAD
 <span class="command-link" data-description="Changes the AI's personality and terminal theme.\n\nUsage: mode [option]\nOptions: normal, beast, roast">mode</span>      - Set AI mode.
 <span class="command-link" data-description="Tells about me.">whomai</span>    - Information about the owner of this terminal.
 <span class="command-link" data-description="Renders your text as a 3D ASCII art piece.\n\nUsage: asciify [text]\nExample: asciify chirag">asciify</span>   - Generate 3D ASCII art.
 <span class="command-link" data-description="Engage the AI assistant in conversation.\n\nUsage: chat [your message]\nExample: chat tell me a joke">chat</span>      - AI chatbot.
 <span class="command-link" data-description="Accesses the AI datastream for in-universe information.\n\nUsage: lore [topic]\nExample: lore chrome">lore</span>      - Query the AI for lore.
 <span class="command-link" data-description="Simulates a hacking sequence against a specified target.\n\nUsage: hack [target]\nExample: hack omnicorp">hack</span>      - Initiate AI-driven hack simulation.
+=======
+<span class="command-link" data-description="Changes the AI's personality and terminal theme.\n\nUsage: mode [option]\nOptions: normal, beast, roast">mode</span>      - ✨ Set AI mode.
+<span class="command-link" data-description="Displays information about the terminal's operator.">whoami</span>    - Information about the current operator.
+<span class="command-link" data-description="Engage the AI assistant in conversation.\n\nUsage: chat [your message]\nExample: chat tell me a joke">chat</span>      - ✨ AI chatbot.
+<span class="command-link" data-description="Renders your text as a 3D ASCII art piece.\n\nUsage: asciify [text]\nExample: asciify chirag">asciify</span>   - ✨ Generate 3D ASCII art.
+<span class="command-link" data-description="Accesses the AI datastream for in-universe information.\n\nUsage: lore [topic]\nExample: lore chrome">lore</span>      - ✨ Query the AI for lore.
+<span class="command-link" data-description="Simulates a hacking sequence against a specified target.\n\nUsage: hack [target]\nExample: hack omnicorp">hack</span>      - ✨ Initiate AI-driven hack simulation.
+>>>>>>> ascii-art
 <span class="command-link" data-description="Terminates the current terminal session.">exit</span>      - Terminate the session.`;
                 break;
 
@@ -277,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     responseContainer.innerHTML = `Usage: chat [your message].`;
                     break;
                 }
-                
+
                 const isFragmentQuery = argument.toLowerCase().includes('fragment');
                 let personaPrompt = `You are a witty, slightly sarcastic AI assistant in a cyberpunk terminal. Your name is CRNL. Respond to the user's message: "${argument}". Keep your response concise and in character.`;
 
@@ -297,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const chatResponse = await callGemini(personaPrompt);
                 responseContainer.innerHTML = chatResponse.startsWith('// ERROR:') ? `<span class="text-red-500">${chatResponse}</span>` : `<span class="accent">CRNL:</span> ${chatResponse}`;
                 break;
-            
+
             case 'contain':
                 if (argument.toUpperCase() === `${secretKeywords.key1}_${secretKeywords.key2}_${secretKeywords.key3}`) {
                     responseContainer.innerHTML = `<span class="info">[CONTAINMENT PROTOCOL ACCEPTED. FRAGMENT ISOLATED. DUMPING MEMORY CORE... CHECK DEBUG LOGS FOR SIGNATURE KEY.]</span>`;
@@ -326,7 +375,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     responseContainer.innerHTML = `<span class="text-red-500">// EXECUTION FAILED. INVALID SIGNATURE KEY. //</span>`;
                 }
                 break;
-            
+
+            case 'asciify':
+                if (!argument) {
+                    responseContainer.innerHTML = `Usage: asciify [text]. Example: <span class="info">asciify hello</span>`;
+                    break;
+                }
+                responseContainer.innerHTML = `<span class="info">[Rendering 3D ASCII for: ${argument}]</span>`;
+                startAsciiEffect(argument);
+                break;
+
             case 'date':
                 responseContainer.innerHTML = `Current system date: ${new Date().toUTCString()}`;
                 break;
@@ -353,7 +411,7 @@ BRANCH: <span class="accent">CSE</span>`;
                 responseContainer.innerHTML = `<span class="info">[INITIATING BLACK ICE PROTOCOL AGAINST: ${argument.toUpperCase()}...]</span><br>`;
                 const hackPrompt = `Simulate a futuristic hacking sequence against "${argument}". Provide 5 distinct steps of the hack. Each step should be a short, single sentence full of technical cyberpunk jargon. Return as a JSON array of strings.`;
                 const hackResponse = await callGemini(hackPrompt, true);
-                if (hackResponse.startsWith('// ERROR:')) {
+                if (hackResponse.startsWith('// ERROR:') ? `<span class="text-red-500">${hackResponse}</span>` : `<span class="accent">CRNL:</span> ${hackResponse}`.startsWith('// ERROR:')) {
                     responseContainer.innerHTML += `<br><span class="text-red-500">${hackResponse}</span>`;
                     break;
                 }
@@ -366,8 +424,8 @@ BRANCH: <span class="accent">CSE</span>`;
                     }
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     responseContainer.innerHTML += `<span class="accent">[BREACH SUCCESSFUL. ROOT ACCESS GRANTED.]</span>`;
-                } catch(e) {
-                     responseContainer.innerHTML += `<br><span class="text-red-500">// HACK FAILED: AI response corrupted. //</span>`;
+                } catch (e) {
+                    responseContainer.innerHTML += `<br><span class="text-red-500">// HACK FAILED: AI response corrupted. //</span>`;
                 }
                 break;
             case 'exit':
@@ -382,6 +440,7 @@ BRANCH: <span class="accent">CSE</span>`;
                 break;
         }
     }
+<<<<<<< HEAD
 
     const vertexShader=`varying vec2 vUv;uniform float uTime;uniform float uEnableWaves;void main(){vUv=uv;float time=uTime*5.;float waveFactor=uEnableWaves;vec3 transformed=position;transformed.x+=sin(time+position.y)*.5*waveFactor;transformed.y+=cos(time+position.z)*.15*waveFactor;transformed.z+=sin(time+position.x)*waveFactor;gl_Position=projectionMatrix*modelViewMatrix*vec4(transformed,1.);}`;
     const fragmentShader=`varying vec2 vUv;uniform float uTime;uniform sampler2D uTexture;void main(){float time=uTime;vec2 pos=vUv;float r=texture2D(uTexture,pos+cos(time*2.-time+pos.x)*.01).r;float g=texture2D(uTexture,pos+tan(time*.5+pos.x-time)*.01).g;float b=texture2D(uTexture,pos-cos(time*2.+time+pos.y)*.01).b;float a=texture2D(uTexture,pos).a;gl_FragColor=vec4(r,g,b,a);}`;
@@ -467,11 +526,16 @@ BRANCH: <span class="accent">CSE</span>`;
 
             // Request the next frame to continue the animation
             requestAnimationFrame(animate);
+=======
+    function startAsciiEffect(text) {
+        if (activeAsciiEffect) {
+            activeAsciiEffect.dispose();
+>>>>>>> ascii-art
         }
 
-        // Start the animation loop
-        animate();
+        const asciiSize = 10; // 👈 master control (try 10–14)
 
+<<<<<<< HEAD
         // Update mouse positions when the mouse moves
         window.addEventListener('mousemove', (event) => {
             mouseX = event.clientX;
@@ -719,3 +783,34 @@ BRANCH: <span class="accent">CSE</span>`;
             const { width, height } = container.getBoundingClientRect();
             asciiEffect.setSize(width, height);
         });
+=======
+        const settings = {
+            text,
+            asciiFontSize: asciiSize,
+            textFontSize: 200,
+            textColor: '#fdf9f3',
+            planeBaseHeight: asciiSize * 1.2, // 👈 tie plane height to ascii size
+            enableWaves: true
+        };
+
+        asciiPopup.style.display = 'flex';
+        activeAsciiEffect = new CanvAscii(settings, asciiContainer);
+        activeAsciiEffect.load();
+    }
+
+    function closeAsciiEffect() {
+        asciiPopup.style.display = 'none';
+        if (activeAsciiEffect) {
+            activeAsciiEffect.dispose();
+            activeAsciiEffect = null;
+        }
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && asciiPopup.style.display === 'flex') {
+            closeAsciiEffect();
+        }
+    });
+
+});
+>>>>>>> ascii-art
