@@ -58,7 +58,7 @@ Because this project uses ES6 modules (`import`/`export`), you cannot run it by 
 
 1.  **Clone the Repository**:
     ```bash
-    git clone [your-repository-url]
+    git clone https://github.com/yeschirag/gdg-terminal-interface
     ```
 2.  **Navigate to the Directory**:
     ```bash
@@ -98,17 +98,4 @@ The secret key is hidden behind the "Rogue AI Fragment" puzzle. Here is the step
 4.  **Check the Developer Console**: Open your browser's developer console (usually with F12). You will see a colored message containing the final signature key (e.g., **GHOST_IN_THE_SHELL**) and the command to use it.
 
 5.  **Execute the Final Command**: Return to the terminal and type the final command with the key from the console.
-    * `execute GHOST_IN_THE_SHELL`
-    * This will solve the puzzle and display the final success message.
-
-</details>
-
----
-
-## Future Enhancements
-
-* **Sound Design**: Add typing sounds, UI interaction beeps, and ambient background noise to enhance immersion.
-* **Live ASCII Cam**: Integrate webcam access to render a live video feed as ASCII art.
-* **Persistent State**: Save the current theme and command history to `localStorage` so they persist between sessions.
-* **More Puzzles**: Expand the lore with more complex, branching secret key puzzles.
-
+    * `execute GHOST_IN_
