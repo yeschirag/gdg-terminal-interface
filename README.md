@@ -4,18 +4,11 @@ Welcome to the Cyberpunk Interactive Terminal, a web-based project that simulate
 
 ---
 
-## Visual Documentation
+## Demonstration Video
 
-Here's a glimpse into the terminal's interface and its various modes.
+[**Click here to watch the project demonstration video.**](https://www.youtube.com/watch?v=your_video_id)
 
-**(Screenshot of the main terminal in 'normal' mode)**
-*Shows the default cyan and magenta theme with the command list displayed.*
-
-**(GIF of 'beast' mode)**
-*Demonstrates the switch to the aggressive red theme and the unstable screen-shake effect.*
-
-**(Screenshot of the 'asciify' command popup)**
-*Shows the 3D ASCII art rendering of a word in the popup card over the main terminal.*
+*(Please replace the link above with your actual video URL.)*
 
 ---
 
@@ -44,11 +37,21 @@ This project is built with a rich set of interactive and visual features:
 
 ---
 
-## Technology Stack
+## Technology Stack Explained
 
-* **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6 Modules)
-* **3D Graphics**: Three.js
-* **AI**: Google Gemini API
+This project is built entirely with frontend technologies, running directly in the browser without a backend server.
+
+* **HTML5**: Provides the fundamental structure of the terminal, including the main container, headers, footers, and the input line.
+* **CSS3**:
+    * **Custom Properties (Variables)**: Used extensively to create the dynamic theming system. Changing the theme is as simple as updating a few CSS variables on the `body` element.
+    * **Flexbox**: Manages the overall layout of the terminal, ensuring it fills the screen and adapts to different window sizes.
+    * **Animations & Keyframes**: Powers all the visual effects, including the glitchy text cursor, the screen-shake in `beast` mode, and the final puzzle payoff.
+* **Vanilla JavaScript (ES6 Modules)**:
+    * **DOM Manipulation**: All the interactivity, from processing commands to displaying output, is handled by directly manipulating the Document Object Model.
+    * **Event Listeners**: Captures user input (keyboard events for typing and arrow keys, mouse events for the custom cursor).
+    * **Asynchronous Operations (`async`/`await`)**: Used to make non-blocking calls to the Google Gemini API, ensuring the terminal remains responsive while waiting for the AI's response.
+* **Three.js**: A powerful 3D graphics library used for the `asciify` command. It creates a 3D scene, renders text onto a plane, and then converts the scene into a live, interactive ASCII art representation.
+* **Google Gemini API**: The core of the AI features. The terminal makes secure `fetch` requests to the Gemini API to generate creative and dynamic content for the `chat`, `lore`, and `hack` commands.
 
 ---
 
@@ -58,7 +61,7 @@ Because this project uses ES6 modules (`import`/`export`), you cannot run it by 
 
 1.  **Clone the Repository**:
     ```bash
-    git clone https://github.com/yeschirag/gdg-terminal-interface
+    git clone [your-repository-url]
     ```
 2.  **Navigate to the Directory**:
     ```bash
@@ -98,4 +101,15 @@ The secret key is hidden behind the "Rogue AI Fragment" puzzle. Here is the step
 4.  **Check the Developer Console**: Open your browser's developer console (usually with F12). You will see a colored message containing the final signature key (e.g., **GHOST_IN_THE_SHELL**) and the command to use it.
 
 5.  **Execute the Final Command**: Return to the terminal and type the final command with the key from the console.
-    * `execute GHOST_IN_
+    * `execute GHOST_IN_THE_SHELL`
+    * This will solve the puzzle and display the final success message.
+
+</details>
+
+---
+
+## Future Enhancements
+
+* **Sound Design**: Add typing sounds, UI interaction beeps, and ambient background noise to enhance immersion.
+* **Persistent State**: Save the current theme and command history to `localStorage` so they persist between sessions.
+* **More Puzzles**: Expand the lore with more complex, branching secret key puzzles.
