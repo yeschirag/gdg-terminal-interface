@@ -209,12 +209,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 responseContainer.innerHTML = `
 <span class="command-link" data-description="Shows this list of available commands.">help</span>      - System command reference.
 <span class="command-link" data-description="Clears all text from the terminal screen.">clear</span>     - Clear the display buffer.
-<span class="command-link" data-description="Changes the AI's personality and terminal theme.\n\nUsage: mode [option]\nOptions: normal, beast, roast">mode</span>      - ✨ Set AI mode.
+<span class="command-link" data-description="Changes the AI's personality and terminal theme.\n\nUsage: mode [option]\nOptions: normal, beast, roast">mode</span>      - Set AI mode.
 <span class="command-link" data-description="Displays information about the terminal's operator.">whoami</span>    - Information about the current operator.
-<span class="command-link" data-description="Engage the AI assistant in conversation.\n\nUsage: chat [your message]\nExample: chat tell me a joke">chat</span>      - ✨ AI chatbot.
-<span class="command-link" data-description="Renders your text as a 3D ASCII art piece.\n\nUsage: asciify [text]\nExample: asciify chirag">asciify</span>   - ✨ Generate 3D ASCII art.
-<span class="command-link" data-description="Accesses the AI datastream for in-universe information.\n\nUsage: lore [topic]\nExample: lore chrome">lore</span>      - ✨ Query the AI for lore.
-<span class="command-link" data-description="Simulates a hacking sequence against a specified target.\n\nUsage: hack [target]\nExample: hack omnicorp">hack</span>      - ✨ Initiate AI-driven hack simulation.
+<span class="command-link" data-description="Engage the AI assistant in conversation.\n\nUsage: chat [your message]\nExample: chat tell me a joke">chat</span>      - AI chatbot.
+<span class="command-link" data-description="Renders your text as a 3D ASCII art piece.\n\nUsage: asciify [text]\nExample: asciify chirag">asciify</span>   - Generate 3D ASCII art.
+<span class="command-link" data-description="Accesses the AI datastream for in-universe information.\n\nUsage: lore [topic]\nExample: lore chrome">lore</span>      - Query the AI for lore.
+<span class="command-link" data-description="Simulates a hacking sequence against a specified target.\n\nUsage: hack [target]\nExample: hack omnicorp">hack</span>      - Initiate AI-driven hack simulation.
 <span class="command-link" data-description="Terminates the current terminal session.">exit</span>      - Terminate the session.`;
                 break;
 
