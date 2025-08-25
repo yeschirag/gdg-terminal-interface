@@ -1,4 +1,7 @@
-/* --- Color Palette & Global Styles --- */
+* {
+    cursor: none;
+}
+
 :root {
     --background: #0a0418;
     --primary: #00ffff;
@@ -9,6 +12,72 @@
     /* Purple */
     --text: #d0d0ff;
     --glow: 0 0 3px var(--primary), 0 0 5px var(--primary);
+}
+
+#cursor-follower {
+    position: fixed;
+    z-index: 999;
+    pointer-events: none;
+    will-change: transform;
+    opacity: 0;
+    /* Hidden by default */
+    transition: opacity 0.3s ease-in-out;
+}
+
+#ascii-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+#ascii-container canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+}
+
+#ascii-container pre {
+    margin: 0;
+    user-select: none;
+    padding: 0;
+    line-height: 1em;
+    text-align: left;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-image: radial-gradient(circle, #ff6188 0%, #fc9867 50%, #ffd866 100%);
+    background-attachment: fixed;
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    z-index: 9;
+    mix-blend-mode: difference;
+}
+
+/* UI for changing text */
+#ui-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+}
+
+#text-input {
+    font-family: 'IBM Plex Mono', monospace;
+    background: transparent;
+    border: 1px solid #fff;
+    color: #fff;
+    padding: 8px;
+    border-radius: 4px;
 }
 
 /* --- Beast Mode Theme --- */
@@ -43,6 +112,8 @@ body {
     margin: 0;
     padding: 0;
     transition: background-color 0.5s ease;
+<<<<<<< HEAD
+=======
     cursor: none;
 }
 
@@ -63,6 +134,7 @@ body {
     will-change: transform;
     opacity: 0; /* Hidden by default */
     transition: opacity 0.3s ease-in-out;
+>>>>>>> ascii-art
 }
 
 /* --- Glitch effect for puzzle payoff --- */
@@ -257,7 +329,6 @@ body {
 /* --- Enhanced Hover Effect for Help Menu --- */
 .command-link {
     color: var(--secondary);
-    cursor: pointer;
     position: relative;
     display: inline-block;
     text-shadow: 0 0 3px var(--secondary);
@@ -314,53 +385,6 @@ body {
     font-size: 1rem;
 }
 
-/* --- NEW: Glitchy Cursor --- */
-.cursor {
-    width: 10px;
-    height: 1.2em;
-    background: var(--primary);
-    display: inline-block;
-    vertical-align: middle;
-    animation: glitch-cursor 200ms infinite;
-}
-
-@keyframes glitch-cursor {
-    0% {
-        background: var(--primary);
-        box-shadow: var(--glow);
-        transform: translate(0, 0);
-    }
-
-    20% {
-        background: var(--secondary);
-        box-shadow: 0 0 5px var(--secondary);
-        transform: translate(-1px, 1px);
-    }
-
-    40% {
-        background: var(--primary);
-        box-shadow: var(--glow);
-        transform: translate(1px, -1px);
-    }
-
-    60% {
-        background: transparent;
-        box-shadow: none;
-    }
-
-    80% {
-        background: var(--primary);
-        box-shadow: var(--glow);
-        transform: translate(1px, 1px);
-    }
-
-    100% {
-        background: var(--primary);
-        box-shadow: var(--glow);
-        transform: translate(0, 0);
-    }
-}
-
 /* --- Command Output Styles --- */
 .command-output {
     white-space: pre-wrap;
@@ -381,4 +405,65 @@ body {
 .text-red-500 {
     color: #ff4444;
     text-shadow: 0 0 5px #ff4444;
+}
+
+/* --- ASCII Art & Animations from your file --- */
+.ascii-art {
+    color: var(--primary);
+    text-shadow: var(--glow);
+    white-space: pre;
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+.typing-animation {
+    border-right: 2px solid var(--primary);
+    white-space: nowrap;
+    overflow: hidden;
+    animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+}
+
+@keyframes typing {
+    from {
+        width: 0
+    }
+
+    to {
+        width: 100%
+    }
+}
+
+@keyframes blink-caret {
+
+    from,
+    to {
+        border-color: transparent
+    }
+
+    50% {
+        border-color: var(--primary);
+    }
+}
+
+.matrix-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.matrix-effect span {
+    position: absolute;
+    top: -20px;
+    color: var(--primary);
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh);
+    }
 }
