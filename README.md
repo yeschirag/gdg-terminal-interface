@@ -6,9 +6,7 @@ Welcome to the Cyberpunk Interactive Terminal, a web-based project that simulate
 
 ## Demonstration Video
 
-[**Click here to watch the project demonstration video.**](https://www.youtube.com/watch?v=your_video_id)
-
-*(Please replace the link above with your actual video URL.)*
+[**Click here to watch the project demonstration video.**](https://drive.google.com/file/d/1wwDgEjnVx_D33PQ2L7Ey3t4a1Uc93Yuj/view?usp=drivesdk)
 
 ---
 
@@ -61,7 +59,7 @@ Because this project uses ES6 modules (`import`/`export`), you cannot run it by 
 
 1.  **Clone the Repository**:
     ```bash
-    git clone [your-repository-url]
+    git clone github.com/yeschirag/gdg-web-terminal
     ```
 2.  **Navigate to the Directory**:
     ```bash
